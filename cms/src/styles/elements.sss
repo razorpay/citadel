@@ -1,0 +1,79 @@
+url
+  display: table
+  color: #4f5c5d
+  font-size: 1.1em
+  font-family: monospace
+  margin: 6px 0 30px
+  line-height: 24px
+  border: 1px solid #34495E
+  padding: 0 12px
+  border-radius: 3px
+  background: #EAECEE
+
+  &:before
+    margin: 0 12px 0 -12px
+    background: #34495E
+    border-radius: 2px 0 0 2px
+    font-size: 12px
+    font-weight: 600
+    letter-spacing: .3px
+    color: #fff
+    padding: 0 10px
+    float: left
+
+  &[get]
+    background: #E9F7EF
+    border-color: #27AE60
+    &:before
+      background: #27AE60
+      content: 'GET'
+
+  &[post]
+    background: #FBEDE5
+    border-color: #D35400
+    &:before
+      background: #D35400
+      content: 'POST'
+
+  &[patch]:before
+    content: 'PATCH'
+  &[put]:before
+    content: 'PUT'
+  &[delete]:before
+    content: 'DELETE'
+
+  b
+    font-weight: 400
+    color: #000
+
+callout
+  display: block
+  background: #F4F8FA
+  border-left: 4px solid #5BC0DE
+  color: rgba(0, 0, 0, 0.8)
+  padding: 14px 20px
+  margin: 16px 0
+  word-break: break-word
+
+  p
+    margin: 0
+
+  &[danger]
+    background: rgba(245,97,81,0.15)
+    border-left-color: #F56151
+
+  &[warn]
+    background: rgba(255,167,38,0.1)
+    border-left-color: #FFA726
+
+read-more
+  a
+    color: #526AD0 !important
+    cursor: pointer
+    font-weight: 600
+    transition: 0.2s
+    &:after
+      content: url('/src/assets/images/read-more.svg')
+      position: absolute
+      padding-left: 5px
+      padding-top: 1px

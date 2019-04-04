@@ -1,0 +1,198 @@
+h1, h2, h3
+  font-weight: bold
+
+h1
+  margin-bottom: 0
+  font-size: 30px
+
+h2
+  font-size: 20px
+
+h3
+  font-size: 16px
+
+h4
+  font-size: 14px
+
+.header-anchor
+  color: $primary
+  transition: opacity 0.2s
+  opacity: 0
+  margin-left: 4px
+
+h2
+  cursor: default
+  position: relative
+
+h3
+  font-style: italic
+
+h4, h5, h6
+  font-weight: 600
+  margin: 22px 0 -4px
+
+ul, ol
+  margin-top: 8px
+  padding-left: 30px
+
+li
+  ul, ol
+    margin-left: -12px
+
+li, p, ul, ol
+  line-height: 24px
+  font-size: 14px
+
+ol
+  counter-reset: item
+  li
+    display: block
+    &:before
+      content: counter(item) ". "
+      counter-increment: item
+      width: 24px
+      margin-left: -24px
+      float: left
+
+li
+  ol
+    li:before
+      content: counter(item, lower-alpha) ". "
+
+img
+  display: block
+  max-width: 100%
+  border: 1px solid #eee
+  padding: 10px
+  box-sizing: border-box
+  border-radius: 2px
+  max-height: 800px
+  vertical-align: middle
+  margin-top: -3px
+
+.emoji
+  height: 18px
+  border: 0
+  padding: 0
+
+h1, h2
+  .emoji
+    height: 24px
+
+code
+  font-family: $mono
+  tab-size: 4
+  vertical-align: middle
+  margin: 0 3px
+  color: #34495e
+  font-size: 13px
+  padding: 2px 4px
+  border-radius: 3px
+  white-space: pre-wrap
+  word-wrap: break-word
+  background-color: #f1f1f1
+
+dl
+  border-radius: 2px
+  position: relative
+  font-size: 13px
+
+dt
+  color: #9fa3a8
+  float: left
+  font-size: 13px
+  padding-top: 20px
+  line-height: 26px
+  text-align: right
+  width: 40%
+  display: flex
+  flex-direction: column
+  > *
+    align-self: flex-end
+    flex-basis: 0
+
+  em
+    font-style: normal
+    border: 1px solid #969696
+    color: #969696
+    padding: 0 5px
+    border-radius: 3px
+    text-transform: uppercase
+    letter-spacing: .25px
+    font-size: 11px
+    height: 20px
+    line-height: 18px
+    margin: 1px 0
+    font-weight: bold
+
+  code
+    position: relative
+    padding: 0
+    border: 0
+    background: none
+    font-weight: bold
+    margin: 0
+    &:last-child:after
+      content: '\A'
+      white-space: pre
+
+dd
+  line-height: 1.75
+  margin: 0
+  min-height: 80px
+  padding: 22px 40px 22px 50%
+  &:nth-of-type(2n)
+    background-color: #fbfbfb
+  > *
+    margin: 0
+
+blockquote
+  border-left: .5em solid #eee
+  padding: 0 2em
+  margin-left: 0
+  max-width: 476px
+  cite
+    font-size:14px
+    line-height:20px
+    color:#bfbfbf
+  &:before
+    content: '\2014 \00A0'
+  p
+    color: #666
+    max-width: 460px
+
+hr
+  border: 0
+  height: 0
+  border-top: 1px solid rgba(0, 0, 0, 0.1)
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3)
+  margin-top: 35px
+
+result
+  &[mono]
+    font-family: $mono
+  font-size: 13px
+  border-radius: 0 0 4px 4px
+  padding: 26px 20px
+  margin-top: -15px
+  position: relative
+  display: block
+  border: 1px solid #eee
+  border-top-color: transparent
+  .header-anchor
+    top: -3px
+
+section
+  &:before
+    content: ''
+    display: block
+    margin-top: 40px
+    margin-bottom: 40px
+    border-bottom: 1px solid #e6e6e6
+
+@media(max-width: 900px)
+  dt
+    width: 60%
+  dd
+    padding-left: 65%
+

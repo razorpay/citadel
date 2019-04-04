@@ -1,0 +1,19 @@
+backend:
+  name: github
+  repo: pronav/test
+  base_url: https://xps.pronav.in
+publish_mode: editorial_workflow
+media_folder: "images"
+collections:
+  - name: "pages"
+    label: "Pages"
+    label_singular: "Page"
+    folder: "pages"
+    create: true
+    extension: "md"
+    identifier_field: "route"
+    slug: "{{route}}"
+    fields:
+      - { label: "Route", name: "route", widget: "string" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "DocEditor" }

@@ -1,0 +1,20 @@
+.Button
+  outline: none
+  white-space: nowrap
+  border: 0
+  cursor: pointer
+  user-select: none
+  font-family: inherit
+  font-size: 1em
+  transition: 0.3s
+  vertical-align: middle
+  height: 48px
+
+  &:hover
+    background-image: linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1))
+  &:active
+    box-shadow: 0 0 0 1px rgba(0,0,0,.15) inset, 0 0 6px rgba(0,0,0,.2) inset
+
+  &[disabled], &.is-loading
+    cursor: not-allowed
+    opacity: 0.5
