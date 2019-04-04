@@ -104,6 +104,43 @@ const deleteFile = file => {
   });
 };
 
+const createComment = (comment, file) => {
+  github.pulls
+    .createComment({
+      owner: "nidhi-tandon",
+      repo: "nidhi-tandon.github.io",
+      number,
+      body: comment,
+      commit_id,
+      path: file.path,
+      position
+    })
+    .then(result => {});
+};
+
+const createCommentOnComment = (comment, commentId) => {
+  github.pulls
+    .createComment({
+      owner: "nidhi-tandon",
+      repo: "nidhi-tandon.github.io",
+      number,
+      body: comment,
+      in_reply_to: commentId,
+      position
+    })
+    .then(result => {});
+};
+
+const createReviewRequest = () => {
+  github.pulls
+    .createReviewRequest({
+      owner: "nidhi-tandon",
+      repo: "nidhi-tandon.github.io",
+      number
+    })
+    .then(result => {});
+};
+
 const showContent = path => {
   console.log("path", path);
   getTextContent(path).then(() => {
