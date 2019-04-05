@@ -1,20 +1,11 @@
-import { Atom, swap, useAtom, deref } from "hooks/useAtom";
 import github from "github";
 import ValidationHelper from "../helper/ValidationHelper";
 
-const initialState = {
-  tree: null,
-  file: null,
-  isShowContentEnabled: false,
-  isDropDownEnabled: false,
-  fetchedIndex: ""
-};
+const owner = "nidhi-tandon";
+const repo = "nidhi-tandon.github.io";
 
-const content = Atom.of(initialState);
-
-const getContent = () => {
-  const { tree } = deref(content);
-  if (!tree) {
+export function getContent() {
+  return new Promise((resolve, reject) => {
     github.git
       .getTree({
         owner: "nidhi-tandon",
@@ -25,9 +16,8 @@ const getContent = () => {
       })
       .then(response => {
         console.log("response", response.tree);
-
+        let array = response.tree;
         if (ValidationHelper.isArray(response.tree)) {
-          let array = response.tree;
           array.map(obj => {
             if (obj.type === "tree") {
               console.log("getTextContent Inside", getTextContent(obj.path));
@@ -42,16 +32,16 @@ const getContent = () => {
           });
         }
 
-        swap(content, state => ({
-          ...state,
-          tree: response.tree
-        }));
+        resolve(array);
       })
-      .catch(error => {});
-  }
-};
+      .catch(error => {
+        console.log("error", error);
+        reject(error);
+      });
+  });
+}
 
-const getTextContent = path => {
+export const getTextContent = path => {
   return new Promise((resolve, reject) => {
     github.repos
       .getContents({
@@ -63,14 +53,10 @@ const getTextContent = path => {
       })
       .then(result => {
         console.log("getTextContent", result);
-        swap(content, state => ({
-          ...state,
-          file: !ValidationHelper.isArray(result)
-            ? atob(result.content)
-            : result
-        }));
-
-        resolve(result);
+        let res = !ValidationHelper.isArray(result)
+          ? atob(result.content)
+          : result;
+        resolve(res);
       })
       .catch(error => {
         reject(error);
@@ -78,7 +64,7 @@ const getTextContent = path => {
   });
 };
 
-const deleteFile = file => {
+export const deleteFile = file => {
   console.log("deleteFile - File", file);
   return new Promise((resolve, reject) => {
     github.repos
@@ -102,6 +88,22 @@ const deleteFile = file => {
         reject(error);
       });
   });
+};
+
+const createPR = (title, headBranch, baseBranch = "master") => {
+  github.pulls
+    .create({
+      owner: owner,
+      repo: repo,
+      title: title,
+      head: headBranch,
+      base: baseBranch,
+      headers: { Accept: "application/vnd.github.v3.diff" }
+    })
+    .then(result => {})
+    .catch(error => {
+      console.log("error", error);
+    });
 };
 
 const createComment = (comment, file) => {
@@ -139,53 +141,4 @@ const createReviewRequest = () => {
       number
     })
     .then(result => {});
-};
-
-const showContent = path => {
-  console.log("path", path);
-  getTextContent(path).then(() => {
-    swap(content, state => ({
-      ...state,
-      isShowContentEnabled: true
-    }));
-  });
-};
-
-const showDropdown = index => {
-  console.log("showDropdown", index);
-  swap(content, state => ({
-    ...state,
-    isDropDownEnabled: !state.isDropDownEnabled,
-    fetchedIndex: index
-  }));
-};
-
-const closeShowContent = () => {
-  swap(content, state => ({
-    ...state,
-    isShowContentEnabled: false
-  }));
-};
-
-export default () => {
-  const {
-    tree,
-    file,
-    isShowContentEnabled,
-    isDropDownEnabled,
-    fetchedIndex
-  } = useAtom(content);
-  return [
-    tree,
-    getContent,
-    file,
-    getTextContent,
-    isShowContentEnabled,
-    showContent,
-    isDropDownEnabled,
-    showDropdown,
-    deleteFile,
-    closeShowContent,
-    fetchedIndex
-  ];
 };
