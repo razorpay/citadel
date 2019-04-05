@@ -1,4 +1,4 @@
-import { getContent, getTextContent, deleteFile } from "../../state/content";
+import { getContent, getTextContent, deleteFile, getComments, getReviewRequestsList, listCommentsFromIssues } from "../../state/content";
 import { getUser, setToken } from "../../state/user";
 import Button from "rc/Button";
 import Icon from "rc/Icon";
@@ -32,6 +32,13 @@ export default class MainScreen extends PureComponent {
     };
   }
 
+
+
+  componentDidMount(){
+    listCommentsFromIssues().then(()=>{
+
+    })
+  }
   fetchUser() {
     getUser().then(response => {
       this.setState({

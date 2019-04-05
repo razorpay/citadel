@@ -100,7 +100,7 @@ const createPR = (title, headBranch, baseBranch = "master") => {
       base: baseBranch,
       headers: { Accept: "application/vnd.github.v3.diff" }
     })
-    .then(result => {})
+    .then(result => { })
     .catch(error => {
       console.log("error", error);
     });
@@ -117,7 +117,7 @@ const createComment = (comment, file) => {
       path: file.path,
       position
     })
-    .then(result => {});
+    .then(result => { });
 };
 
 const createCommentOnComment = (comment, commentId) => {
@@ -130,7 +130,7 @@ const createCommentOnComment = (comment, commentId) => {
       in_reply_to: commentId,
       position
     })
-    .then(result => {});
+    .then(result => { });
 };
 
 const createReviewRequest = () => {
@@ -140,5 +140,44 @@ const createReviewRequest = () => {
       repo: "nidhi-tandon.github.io",
       number
     })
-    .then(result => {});
+    .then(result => { });
 };
+
+export const getComments = () => {
+  return new Promise((resolve, reject) => {
+    github.pulls.getCommentsForReview({
+        owner: owner,
+        repo: repo,
+         number:1,
+         review_id:223221739,
+        // comment_id:'2cc7dc244eed4480e8b46c91e911e96b',
+         client_id: "97ea4080913caf42c3e6",
+         client_secret: "e541c36d0764a35bff8d3dd6d46ed056b2a2b009"
+      })
+      .then(result => {
+        console.log("getComments", result)
+       }).catch((error)=>{
+         console.log("getComments error", error)
+       })
+
+  })
+}
+
+export const getReviewRequestsList=()=>{
+  github.pulls.listReviews({owner: owner, repo:repo, number:1,   client_id: "97ea4080913caf42c3e6",
+  client_secret: "e541c36d0764a35bff8d3dd6d46ed056b2a2b009"}).then(result => {
+    console.log("getReviewRequestsList", result)
+  })
+
+}
+
+
+export const listCommentsFromIssues=()=>{
+  return new Promise((resolve, reject)=>{
+    github.pulls.listCommentsForRepo({owner: owner, repo: repo, client_id: "97ea4080913caf42c3e6",
+    client_secret: "e541c36d0764a35bff8d3dd6d46ed056b2a2b009"}).then(result => {
+
+    })
+
+  })
+}

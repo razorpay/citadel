@@ -1,7 +1,7 @@
 {
   "name": "cms",
   "dependencies": {
-    "citadel": "file:../",
+    "react-common": "git+ssh://git@github.com:razorpay/react-common.git#58a127c",
     "gaze": "^1.1.3",
     "hast-util-to-html": "^5.0.0",
     "prop-types": "^15.7.2",
