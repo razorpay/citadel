@@ -1,16 +1,15 @@
 import { getContent, getTextContent, deleteFile, getComments, getReviewRequestsList, listCommentsFromIssues } from "../../state/content";
 import { getUser, setToken } from "../../state/user";
-import Button from "rc/Button";
-import Icon from "rc/Icon";
-import Flex from "rc/Flex";
-import Loader from "rc/Loader";
+// import Button from "rc/Button";
+// import Icon from "rc/Icon";
+// import Flex from "rc/Flex";
+// import Loader from "rc/Loader";
 import "./MainScreen.sss";
 import remark from "remark";
 import remark2react from "remark-react";
 import { getTree } from "github";
 import React, { PureComponent } from "react";
 import ValidationHelper from "../../helper/ValidationHelper";
-import { withRouter } from "react-router-dom";
 import EditorContainer from "./components";
 
 const authUrl =
@@ -171,22 +170,22 @@ export default class MainScreen extends PureComponent {
     );
     return (
       <div>
-        <Flex className="MainScreen">
+        <div className="MainScreen">
           {loading ? (
-            <Loader />
+            <div />
           ) : !loggedIn ? (
-            <Button onClick={this.login} m="auto">
-              <Icon github /> Login
-            </Button>
+            <div onClick={this.login} m="auto">
+              <div github /> Login
+            </div>
           ) : isShowContentEnabled ? (
             <EditorContainer content={file} close={this.closeEditor} />
           ) : (
             <React.Fragment>
-              <Flex className="Topbar">
+              <div className="Topbar">
                 <img src={user.avatar_url} />
-              </Flex>
+              </div>
               <div className="ContentContainer">
-                <Flex className="SideMenu">
+                <div className="SideMenu">
                   <ul style={{ width: "100%" }}>
                     {tree.map(obj => {
                       console.log("obj", obj);
@@ -308,9 +307,9 @@ export default class MainScreen extends PureComponent {
                       );
                     })}
                   </ul>
-                </Flex>
+                </div>
                 {!ValidationHelper.isEmpty(file) && (
-                  <Flex className="Description">
+                  <div className="Description">
                     Content
                     <div>
                       {
@@ -319,12 +318,12 @@ export default class MainScreen extends PureComponent {
                           .processSync(file).contents
                       }
                     </div>
-                  </Flex>
+                  </div>
                 )}
               </div>
             </React.Fragment>
           )}
-        </Flex>
+        </div>
       </div>
     );
   }

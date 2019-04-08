@@ -1,7 +1,8 @@
 import "./Preview.sss";
 import parse from "../../parser/parser";
+import React, {PureComponent} from 'react';
 
-export default class Preview extends React.Component {
+export default class Preview extends PureComponent {
   constructor(props) {
     super(props);
   }
