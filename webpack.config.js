@@ -6,7 +6,7 @@ const parser = require("sugarss");
 const chalk = require("chalk");
 const path = require("path");
 const log = console.log;
-const React = require('react');
+
 
 require("child_process").execSync(`
   rm -rf server/*.{js,css}
@@ -18,7 +18,7 @@ const config = webpack.config({
   output: {
     path: __dirname + "/server",
     filename: "bundle.js",
-    libraryTarget:'commonjs'
+    libraryTarget:'amd'
   }
 });
 
