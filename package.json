@@ -5,7 +5,7 @@
     "hast-util-to-html": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-common": "git+ssh://git@github.com:razorpay/react-common.git#8e957560e67531035e849834553e3f92120dbb70",
+    "react-common": "git+ssh://git@github.com:razorpay/react-common.git#92eb12f",
     "react-dropzone": "^10.1.0",
     "react-remark": "^1.0.5",
     "rehype-parse": "^6.0.0",
