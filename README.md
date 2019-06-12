@@ -15,9 +15,9 @@ The current setup for reviewing changes in docs happens through github which get
 
 
 # Tech stack: 
-  Frontend : React (https://reactjs.org/)
-  Backend : github (https://developer.github.com/v3/)
-  Markdown processor : remark (https://github.com/remarkjs/remark)
+  - Frontend : React (https://reactjs.org/)
+  - Backend : github (https://developer.github.com/v3/)
+  - Markdown processor : remark (https://github.com/remarkjs/remark)
 
 # Steps to run (local development):
 - Go to the root of your directory.
