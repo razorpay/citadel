@@ -1,7 +1,7 @@
 # Citadel
 CMS for Documentation
 
-- This is a content management system for tech-writers team to publish, review, update docs[https://razorpay.com/docs/].  
+- This is a content management system for tech-writers team to publish, review, update [docs](https://razorpay.com/docs/).
 
 # Motivation
 The current system is very complex as it requires github interactions and lacks some important features. The aim is to introduce an easier authoring user interface. This CMS will use github in background hiding the technical complexities and will support features like :
