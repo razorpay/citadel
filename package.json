@@ -13,7 +13,7 @@
     "rehype-stringify": "^5.0.0",
     "remark": "^10.0.1",
     "remark-autolink-headings": "^5.1.0",
-    "remark-highlight.js": "^5.1.0",
+    "remark-highlight.js": "^5.1.1",
     "remark-html": "^9.0.0",
     "remark-parse": "^6.0.3",
     "remark-react": "^5.0.1",
