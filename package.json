@@ -10,7 +10,7 @@
     "react-remark": "^1.0.5",
     "rehype-parse": "^6.0.0",
     "rehype-raw": "^4.0.0",
-    "rehype-stringify": "^5.0.0",
+    "rehype-stringify": "^6.0.0",
     "remark": "^10.0.1",
     "remark-autolink-headings": "^5.1.0",
     "remark-highlight.js": "^5.1.0",
