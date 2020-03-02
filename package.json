@@ -2,7 +2,7 @@
   "name": "cms",
   "dependencies": {
     "gaze": "^1.1.3",
-    "hast-util-to-html": "^5.0.0",
+    "hast-util-to-html": "^7.1.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-common": "git+ssh://git@github.com:razorpay/react-common.git#92eb12f",
