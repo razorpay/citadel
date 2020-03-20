@@ -4,7 +4,7 @@
     "gaze": "^1.1.3",
     "hast-util-to-html": "^5.0.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
+    "react": "^16.13.1",
     "react-common": "git+ssh://git@github.com:razorpay/react-common.git#92eb12f",
     "react-dropzone": "^10.1.0",
     "react-remark": "^1.0.5",
