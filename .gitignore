@@ -1,0 +1,12 @@
+# output
+/build
+/docs
+
+# dependencies
+/node_modules
+
+# others
+/.idea
+*.orig
+*.DS_Store
+npm-debug.log

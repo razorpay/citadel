@@ -1,0 +1,33 @@
+box: pronav/node
+
+build:
+  steps:
+    - npm-install
+
+    - script:
+        name: build branch
+        code: DOCS_HOME="/docs/$WERCKER_GIT_BRANCH/" NODE_ENV=prod ./node_modules/gulp/bin/gulp.js
+
+    - script:
+        name: deploy branch
+        code: AWS_BUCKET="rzp-1018-nonprod-betasite.razorpay.com" SCOPE_DIR="docs/$WERCKER_GIT_BRANCH/" node /scripts/s3sync.js
+
+    - script:
+        name: build
+        code: NODE_ENV=prod ./node_modules/gulp/bin/gulp.js
+
+    - script:
+        name: remove other dirs
+        code: |
+          rm -rf .git
+          ls | grep -v docs | xargs rm -rf
+
+deploy:
+  steps:
+    - script:
+      name: S3 Sync
+      code: node /scripts/s3sync.js
+
+    - script:
+      name: Cloudfront cache invalidate
+      code: if [[ -v AWS_CLOUDFRONT_DISTRIBUTION_ID ]]; then node /scripts/invalidate.js; fi
