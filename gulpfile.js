@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const glob = require('glob');
 const http = require('http');
