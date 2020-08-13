@@ -217,9 +217,12 @@ gulp.task('js', (done) => {
 
 var sitePath = '../razorpay.com';
 gulp.task('clean', (done) => {
-  execSync(
-    `rm -rf ${DIST_DIR}/assets; mkdir -p ${DIST_DIR}; cp -r ${DOCS_DIR}/assets ${DIST_DIR}/assets`
-  );
+  execSync(`rm -rf ${DIST_DIR}; mkdir -p ${DIST_DIR};`);
+  done();
+});
+
+gulp.task('copy', (done) => {
+  gulp.src(`${DOCS_DIR}/assets/**/*`).pipe(gulp.dest(paths.build + '/assets'));
   done();
 });
 
@@ -249,16 +252,13 @@ gulp.task('redirects', (done) => {
 
 gulp.task(
   'default',
-  gulp.series('clean', 'posts', 'css:prod', 'js', 'unzip', 'redirects')
+  gulp.series('clean', 'copy', 'posts', 'css:prod', 'js', 'unzip', 'redirects')
 );
 gulp.task(
   'watch',
   gulp.series('default', (done) => {
     http.createServer(ecstatic({ root: __dirname })).listen(8080);
 
-    execSync(
-      `rm -rf ${DIST_DIR}/assets; ln -s ${DOCS_DIR}/assets ${DIST_DIR}/assets`
-    );
     var watcher = gulp.watch(paths.routes);
     watcher.on('change', (path) => compilePosts(null, path));
     watcher.on('add', (path) => compilePosts(null, path));

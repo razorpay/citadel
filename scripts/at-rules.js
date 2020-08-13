@@ -25,10 +25,22 @@ const blockRules = {
 
       try {
         fs.accessSync(imageFilePath, fs.constants.F_OK);
+
+        const dest = path.resolve(
+          DIST_DIR,
+          this.currentFile.fileUrl,
+          imagePath
+        );
+        fs.mkdirSync(path.resolve(DIST_DIR, this.currentFile.fileUrl), {
+          recursive: true,
+        });
+
+        fs.copyFileSync(imageFilePath, dest);
         return `<img src="/${DIST_DIR}/${
           this.currentFile.fileUrl + '/' + imagePath
         }" />`;
       } catch (err) {
+        // console.log(err);
         // File not found in same directory
       }
     }
