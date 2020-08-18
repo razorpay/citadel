@@ -240,13 +240,15 @@ gulp.task('unzip', (done) => {
 });
 
 gulp.task('redirects', (done) => {
-  const redirects = yaml.load(fs.readFileSync(`${DOCS_DIR}/redirects.yml`));
-  Object.keys(redirects).forEach((origin) => {
-    const url = new URL('https://razorpay.com/docs/' + redirects[origin]);
-    const html = `<html><head><meta http-equiv="refresh" content="0;URL=${url}"/></head></html>`;
-    execSync(`mkdir -p ${DIST_DIR}/${origin}/`);
-    fs.writeFileSync(`${DIST_DIR}/${origin}/index.html`, html);
-  });
+  try {
+    const redirects = yaml.load(fs.readFileSync(`${DOCS_DIR}/redirects.yml`));
+    Object.keys(redirects).forEach((origin) => {
+      const url = new URL('https://razorpay.com/docs/' + redirects[origin]);
+      const html = `<html><head><meta http-equiv="refresh" content="0;URL=${url}"/></head></html>`;
+      execSync(`mkdir -p ${DIST_DIR}/${origin}/`);
+      fs.writeFileSync(`${DIST_DIR}/${origin}/index.html`, html);
+    });
+  } catch(e) {}
   done();
 });
 
