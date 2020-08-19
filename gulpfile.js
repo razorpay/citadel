@@ -1,5 +1,6 @@
 require('dotenv').config();
 const fs = require('fs');
+const path = require('path');
 const glob = require('glob');
 const http = require('http');
 const { execSync, spawn } = require('child_process');
@@ -28,7 +29,7 @@ const tree = require('./scripts/tree');
 const applyAtRules = require('./scripts/at-rules');
 const util = require('./scripts/util');
 const md = require('./scripts/md');
-const { DOCS_DIR, DIST_DIR } = require('./config');
+const { DOCS_DIR, DIST_DIR, DOCS_HOME } = require('./config');
 
 let routeBasePath = `${DOCS_DIR}/routes`;
 
@@ -57,7 +58,7 @@ const fileurl = (module.exports.fileurl = (file) =>
 var lrscript = '';
 if (process.argv[process.argv.length - 1] === 'watch') {
   let lrserver = livereload.createServer();
-  lrserver.watch(__dirname + '/docs');
+  lrserver.watch(process.env.PWD + '/' + DIST_DIR);
   lrscript = `<script src="http://localhost:${lrserver.config.port}/livereload.js?snipver=1"></script>`;
 }
 
@@ -259,7 +260,9 @@ gulp.task(
 gulp.task(
   'watch',
   gulp.series('default', (done) => {
-    http.createServer(ecstatic({ root: __dirname })).listen(8080);
+    http.createServer(ecstatic({
+      root: path.resolve(DIST_DIR, '.' + DOCS_HOME)
+    })).listen(8080);
 
     var watcher = gulp.watch(paths.routes);
     watcher.on('change', (path) => compilePosts(null, path));
@@ -277,6 +280,8 @@ gulp.task(
           .join('\n')
       );
     });
+
+    console.log('\nDocs serving on http://localhost:8080\n');
     done();
   })
 );
