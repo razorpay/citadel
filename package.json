@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/razorpay/citadel#readme",
   "dependencies": {
-    "autoprefixer-stylus": "^0.14.0",
+    "autoprefixer-stylus": "^1.0.0",
     "dotenv": "^8.2.0",
     "ecstatic": "^4.1.4",
     "front-matter": "^3.0.2",
