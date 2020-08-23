@@ -17,7 +17,7 @@
     "autoprefixer-stylus": "^0.14.0",
     "dotenv": "^8.2.0",
     "ecstatic": "^4.1.4",
-    "front-matter": "^3.0.2",
+    "front-matter": "^4.0.2",
     "gulp": "^4.0.2",
     "gulp-plumber": "^1.2.1",
     "gulp-stylus": "^2.7.0",
