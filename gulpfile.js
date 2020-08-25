@@ -26,6 +26,7 @@ const frontMatter = require('front-matter');
 
 const layout = require('./scripts/layout');
 const tree = require('./scripts/tree');
+const fileurl = module.exports.fileurl = tree.fileurl;
 const applyAtRules = require('./scripts/at-rules');
 const util = require('./scripts/util');
 const md = require('./scripts/md');
@@ -50,10 +51,6 @@ const paths = {
     post: DOCS_DIR + '/layouts/post.pug',
   },
 };
-
-// removes index.md from end
-const fileurl = (module.exports.fileurl = (file) =>
-  file.relative.replace(/\/?(index)?\.md$/, ''));
 
 var lrscript = '';
 if (process.argv[process.argv.length - 1] === 'watch') {

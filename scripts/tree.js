@@ -109,8 +109,7 @@ module.exports = (treeMap) => {
   let files = [];
   function onFile(file) {
     // add title if exists in tree
-    let node =
-      treeMap[file.relative.replace(/\.md$/, '').replace(/\/index$/, '')];
+    let node = treeMap[fileurl(file)];
     if (node) {
       var list = node.list;
 
@@ -161,3 +160,4 @@ module.exports = (treeMap) => {
 };
 
 module.exports.add = add;
+const fileurl = module.exports.fileurl = file => file.relative.replace(/\/?(index)?\.md$/, '');
