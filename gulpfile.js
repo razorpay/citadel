@@ -72,7 +72,7 @@ function compilePosts(cb, changed) {
 
   var relevant;
   if (changed) {
-    var curUrl = fileurl({ relative: changed.replace(/^src\/routes\//, '') });
+    var curUrl = fileurl({ relative: tree.srcurl(changed) });
     relevant = [curUrl];
     gutil.log(`Compiling ${curUrl}`);
     for (var i in globalTreeMap) {

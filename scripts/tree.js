@@ -2,11 +2,13 @@ const fs = require('fs');
 const through = require('through');
 const readFileSync = (file) => fs.readFileSync(file, 'utf8');
 const frontMatter = require('front-matter');
+const { DOCS_DIR } = require('../config');
+const { relative } = require('path');
 
 const add = (map, filePath) => {
   var fm = frontMatter(readFileSync(filePath));
   var scope =
-    fm.scope || filePath.replace(/^src\/routes\//, '').replace(/tree$/, '');
+    fm.scope || srcurl(filePath).replace(/tree$/, '');
   var multistring = fm.body;
 
   // we'll determine the delimiter on first encounter
@@ -160,4 +162,9 @@ module.exports = (treeMap) => {
 };
 
 module.exports.add = add;
-const fileurl = module.exports.fileurl = file => file.relative.replace(/\/?(index)?\.md$/, '');
+const fileurl = module.exports.fileurl = file => {
+  return file.relative.replace(/\/?(index)?\.md$/, '');
+}
+const srcurl = module.exports.srcurl = path => {
+  return relative(DOCS_DIR, path).replace(/^routes\//, '');
+}
