@@ -29,7 +29,7 @@
     "js-yaml": "^3.13.1",
     "livereload": "^0.9.1",
     "lunr": "^2.3.6",
-    "markdown-it": "^8.4.2",
+    "markdown-it": "^12.0.2",
     "markdown-it-deflist": "^2.0.3",
     "markdown-it-emoji": "^1.4.0",
     "parse5": "^5.1.0",
