@@ -1,0 +1,1 @@
+NODE_PATH="$INIT_CWD/node_modules:$INIT_CWD/node_modules/citadel/node_modules:$NODE_PATH" node "`dirname $0`/../citadel/index.js" $@
