@@ -135,7 +135,7 @@ function getNav(doc, allDocs, config) {
 
 function compileDoc({ doc, config, pugCompiler, allDocs }) {
   let content = atRules(doc.body, config);
-  content = markdown(content);
+  content = markdown(content, config);
   return pugCompiler({
     ...doc,
     nav: getNav(doc, allDocs, config),

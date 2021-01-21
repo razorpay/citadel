@@ -4,7 +4,7 @@ const htmlparser2 = require('htmlparser2');
 const row_delim = '---';
 
 function attrs(map) {
-  return Object.entries(map).map(([k, v]) => ` k="${v}"`).join('');
+  return Object.entries(map).map(([k, v]) => ` ${k}="${v}"`).join('');
 }
 
 
@@ -51,6 +51,12 @@ const customHtml = {
   aside: function(html, attributes, config, md) {
     return `<aside>${md.render(html.trim())}</aside>`;
   },
+
+  img: function(html, attributes, config, md) {
+    attributes.src = attributes.src.replace(/^\/docs\//, config.publicPath);
+    attributes.class = 'click-zoom';
+    return `<img${attrs(attributes)}>`;
+  }
 };
 
 function parseHtml(tokens, idx, config, md) {
