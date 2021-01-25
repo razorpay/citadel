@@ -52,7 +52,7 @@ const customHtml = {
     return `<aside>${md.render(html.trim())}</aside>`;
   },
 
-  img: function(html, attributes, config, md) {
+  img: function(html, attributes, config) {
     attributes.src = attributes.src.replace(/^\/docs\//, config.publicPath);
     attributes.class = 'click-zoom';
     return `<img${attrs(attributes)}>`;
@@ -76,7 +76,11 @@ function parseHtml(tokens, idx, config, md) {
           parsingDone = true;
         }
       } else if (!(tag && name === 'br')) {
-        html += `<${name}>`;
+        if (name === 'img') {
+          html += customHtml.img(null, _attributes, config);
+        } else {
+          html += `<${name}${attrs(_attributes)}>`;
+        }
       }
     },
     ontext(text) {
@@ -99,7 +103,7 @@ function parseHtml(tokens, idx, config, md) {
   }
 
   if (customResult) {
-    tokens.slice(idx, currentIndex + 1).forEach(token => {
+    tokens.slice(idx, currentIndex).forEach(token => {
       token.type = 'html_inline';
       token.content = '';
     });
@@ -111,18 +115,5 @@ function parseHtml(tokens, idx, config, md) {
     return result;
   }
 };
-
-function parseNode(node, config, md) {
-  if (node.tagName) {
-    if (customHtml.hasOwnProperty(node.tagName)) {
-      return customHtml[node.tagName](node, config, md, parseHtml);
-    } else {
-      node.set_content(node.childNodes.map(node => parseNode(node, config, md)).join(''));
-      return md(node.outerHTML);
-    }
-  } else {
-    return md(node.text);
-  }
-}
 
 module.exports = parseHtml;
