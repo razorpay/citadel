@@ -41,7 +41,7 @@ const customHtml = {
     if (attributes.org === config.org) {
       return html;
     }
-    return false;
+    return '';
   },
 
   callout: function(html, attributes, config, md) {
