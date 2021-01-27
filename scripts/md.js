@@ -3,6 +3,7 @@ const markdownIt = require('markdown-it');
 const deflist = require('markdown-it-deflist');
 const anchor = require('markdown-it-anchor');
 const renderHtml = require('./custom-html');
+const customFence = require('./fence');
 
 hljs.registerLanguage('curl', require('highlight.js/lib/languages/bash'));
 
@@ -65,16 +66,10 @@ const md = markdownIt({
   renderPermalink,
 });
 
+md.block.ruler.at('fence', customFence(md));
 md.renderer.rules.html_block = function(tokens, idx) {
   return renderHtml(tokens, idx, config, md);
 };
-
-md.renderer.rules.fence = function(tokens, idx, options) {
-  const token = tokens[idx];
-  const lang = token.info.split(':')[0];
-  const code = options.highlight(token.content, lang);
-  return `<pre class='codeblock'><div class='code-container'><span class='copy-btn'>Copy</span><code>${code}</code></div></pre>`
-}
 
 module.exports = (content, _config) => {
   openTags = {};
