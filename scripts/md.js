@@ -2,12 +2,12 @@ const hljs = require('highlight.js');
 const markdownIt = require('markdown-it');
 const deflist = require('markdown-it-deflist');
 const anchor = require('markdown-it-anchor');
-const renderHtml = require('./custom-html');
+const customHtml = require('./html_block');
 const customFence = require('./fence');
 
 hljs.registerLanguage('curl', require('highlight.js/lib/languages/bash'));
 
-let openTags, config;
+let openTags;
 const tokenFn = state => (type, tag, nesting, opts) => {
   const token = new state.Token(type, tag, nesting);
   if (opts) return Object.assign(token, opts);
@@ -57,7 +57,7 @@ const md = markdownIt({
     return str;
   },
 })
-.disable(['table', 'lheading', 'hr'])
+.disable(['table', 'lheading', 'hr', 'html_block'])
 .use(deflist)
 .use(anchor, {
   permalink: true,
@@ -66,13 +66,10 @@ const md = markdownIt({
   renderPermalink,
 });
 
+md.block.ruler.before('heading', 'custom_html_block', customHtml(md));
 md.block.ruler.at('fence', customFence(md));
-md.renderer.rules.html_block = function(tokens, idx) {
-  return renderHtml(tokens, idx, config, md);
-};
 
-module.exports = (content, _config) => {
+module.exports = (content) => {
   openTags = {};
-  config = _config;
   return md.render(content);
 }
