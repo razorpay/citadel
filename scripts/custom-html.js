@@ -37,9 +37,9 @@ const customHtml = {
     return `<url${attrs(attributes)}><div class="ib">${html.replace(/(:[^\/]+)/gm, '<b>$1</b>')}</div></url>`;
   },
 
-  'show-if': function(html, attributes, config) {
+  'show-if': function(html, attributes, config, md) {
     if (attributes.org === config.org) {
-      return html;
+      return md.render(html);
     }
     return '';
   },
@@ -79,12 +79,12 @@ function parseHtml(tokens, idx, config, md) {
         if (name === 'img') {
           html += customHtml.img(null, _attributes, config);
         } else {
-          html += `<${name}${attrs(_attributes)}>`;
+          html += `\n\n<${name}${attrs(_attributes)}>`;
         }
       }
     },
     ontext(text) {
-      html += '\n' + text;
+      html += '\n\n' + text;
     },
     onclosetag(name) {
       if (name === tag) {
