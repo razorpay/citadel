@@ -46,7 +46,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     if (!checkAllowed(key, config)) return next();
     let result = await cfs.read(getPath(key));
     if (!result) {
-      key += '/index';
+      key = [key, 'index'].filter(_ => _).join('/')
       result = await cfs.read(getPath(key));
     }
     if (!result) return next();
@@ -64,8 +64,13 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     }));
     res.end(compileDoc({ doc, config, pugCompiler, allDocs }));
   }
+
   polka()
-    .use(config.publicPath.replace(/\/$/, ''), serveDoc, sirv(config.dist, { dev: true }))
+    .use(
+      config.publicPath.replace(/(?:.)\/$/, ''),
+      serveDoc,
+      sirv(config.dist, { dev: true })
+    )
     .listen(config.port, err => {
       if (err) throw err;
       console.log(`> Running ${config.org} on http://localhost:${config.port}`);
@@ -164,7 +169,7 @@ function checkAllowed(key, config) {
       allow = rule[0] === '+';
     }
   });
-  return allow && key;
+  return allow;
 }
 
 module.exports = {
