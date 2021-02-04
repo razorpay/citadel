@@ -38,18 +38,20 @@ async function compile(config) {
       return;
     }
     const { attributes, body } = frontMatter(contents);
+    const href = key.replace(/(^|\/)index$/, '');
     const doc = {
       key,
       frontMatter: attributes,
       body,
-      href: key.replace(/(^|\/)index$/, ''),
+      href,
       tree: (attributes.tree || '').split('\n').filter(_ => _).map(line => {
         const split = line.split('|');
         const level = split[0].match(/^\s+/)?.[0].length / 2 || 0;
         const title = split.length > 1 && split.slice(1).join('|').trim();
         const navKey = split[0].trim();
+        const treeKey = navKey ? (dir(href) + '/' + navKey).replace(/^\//, '') : '';
         return {
-          key: navKey && dir(key) + '/' + navKey,
+          key: treeKey,
           title,
           level,
         }
