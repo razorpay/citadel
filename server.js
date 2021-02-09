@@ -7,7 +7,8 @@ const chokidar = require('chokidar').watch([]);
 const webpack = require('webpack');
 const stylus = require('stylus');
 const webpackConfigBase = require('./webpack.config');
-const { spawn, execSync } = require('child_process');
+const { exec, execSync } = require('child_process');
+const glob = require('glob').sync;
 
 const cfs = require('./scripts/cfs');
 const atRules = require('./scripts/at-rules');
@@ -69,7 +70,8 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     .use(
       config.publicPath.replace(/(?:.)\/$/, ''),
       serveDoc,
-      sirv(config.dist, { dev: true })
+      sirv(config.dist, { dev: true }),
+      sirv(config.src, { dev: true }),
     )
     .listen(config.port, err => {
       if (err) throw err;
@@ -155,6 +157,7 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     return checkAllowed(key, config) && getDoc(key);
   }).filter(_ => _));
   const { pugCompiler } = init({ config });
+  execSync(`cp -r ${config.src}/* ${config.dist}/; rm ${config.dist}/**/*.md`);
   docs.forEach(doc => {
     const html = compileDoc({ doc, config, pugCompiler, allDocs });
     const filepath = config.dist + '/' + doc.href + '/index.html';
