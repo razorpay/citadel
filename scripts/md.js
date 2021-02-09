@@ -8,6 +8,7 @@ const customFence = require('./fence');
 hljs.registerLanguage('curl', require('highlight.js/lib/languages/bash'));
 
 let openTags;
+let anchors;
 const tokenFn = state => (type, tag, nesting, opts) => {
   const token = new state.Token(type, tag, nesting);
   if (opts) return Object.assign(token, opts);
@@ -31,6 +32,13 @@ const renderPermalink = (slug, opts, state, idx) => {
   ]
   const tag = state.tokens[idx].tag;
   if (tag === 'h2' || tag === 'h1') {
+    anchors.push({
+      href,
+      level: tag.slice(1),
+      title: state.tokens[idx + 1].children
+        .filter(token => token.type === 'text' || token.type === 'code_inline')
+        .reduce((acc, t) => acc + t.content, '')
+    });
     const wrapper = tag === 'h2' ? 'section' : 'article';
     if (openTags.hasOwnProperty(wrapper)) {
       if (tag === 'h1' && openTags.section) {
@@ -71,5 +79,10 @@ md.block.ruler.at('fence', customFence(md));
 
 module.exports = (content) => {
   openTags = {};
-  return md.render(content);
+  anchors = [];
+  content = md.render(content);
+  return {
+    anchors,
+    content,
+  }
 }
