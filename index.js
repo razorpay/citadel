@@ -49,9 +49,9 @@ async function compile(config) {
         const level = split[0].match(/^\s+/)?.[0].length / 2 || 0;
         const title = split.length > 1 && split.slice(1).join('|').trim();
         const navKey = split[0].trim();
-        const treeKey = navKey ? (dir(href) + '/' + navKey).replace(/^\//, '') : '';
+
         return {
-          key: treeKey,
+          key: navKey && dir(key) + '/' + navKey,
           title,
           level,
         }

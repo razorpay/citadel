@@ -8,7 +8,6 @@ const webpack = require('webpack');
 const stylus = require('stylus');
 const webpackConfigBase = require('./webpack.config');
 const { exec, execSync } = require('child_process');
-const glob = require('glob').sync;
 
 const cfs = require('./scripts/cfs');
 const atRules = require('./scripts/at-rules');
@@ -47,7 +46,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     if (!checkAllowed(key, config)) return next();
     let result = await cfs.read(getPath(key));
     if (!result) {
-      key = [key, 'index'].filter(_ => _).join('/')
+      key += '/index';
       result = await cfs.read(getPath(key));
     }
     if (!result) return next();
@@ -68,7 +67,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
 
   polka()
     .use(
-      config.publicPath.replace(/(?:.)\/$/, ''),
+      config.publicPath.replace(/\/$/, ''),
       serveDoc,
       sirv(config.dist, { dev: true }),
       sirv(config.src, { dev: true }),
