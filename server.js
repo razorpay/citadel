@@ -39,45 +39,6 @@ function init({ allDocs, config, watch, getKey }) {
   }
 }
 
-const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
-  const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
-  const serveDoc = async (req, res, next) => {
-    let key = req.path.slice(1).replace(/\/$/, '');
-    if (!checkAllowed(key, config)) return next();
-    let result = await cfs.read(getPath(key));
-    if (!result) {
-      key += '/index';
-      result = await cfs.read(getPath(key));
-    }
-    if (!result) return next();
-    const doc = await getDoc(key);
-    await Promise.all(allDocs[doc.index].tree.map(async d => {
-      let navKey = d.key;
-      let result = await cfs.read(getPath(navKey));
-      if (!result) {
-        navKey += '/index';
-        result = await cfs.read(getPath(navKey));
-      }
-      if (result) {
-        await getDoc(navKey);
-      }
-    }));
-    res.end(compileDoc({ doc, config, pugCompiler, allDocs }));
-  }
-
-  polka()
-    .use(
-      config.publicPath.replace(/\/$/, ''),
-      serveDoc,
-      sirv(config.dist, { dev: true }),
-      sirv(config.src, { dev: true }),
-    )
-    .listen(config.port, err => {
-      if (err) throw err;
-      console.log(`> Running ${config.org} on http://localhost:${config.port}`);
-    });
-}
-
 async function generateCss({ config }) {
   const css = await fs.readFile(config.css);
   stylus.render(String(css), { filename: config.css }, function(err, css){
@@ -149,6 +110,47 @@ function compileDoc({ doc, config, pugCompiler, allDocs }) {
     config,
   });
 }
+
+const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
+  const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
+  const serveDoc = async (req, res, next) => {
+    let key = req.path.slice(1).replace(/\/$/, '');
+    if (!checkAllowed(key, config)) return next();
+    let result = await cfs.read(getPath(key));
+    if (!result) {
+      key += '/index';
+      result = await cfs.read(getPath(key));
+    }
+    if (!result) return next();
+    const doc = await getDoc(key);
+    await Promise.all(
+      allDocs[doc.index].tree.map(async (d) => {
+        let navKey = d.key;
+        let result = await cfs.read(getPath(navKey));
+        if (!result) {
+          navKey += '/index';
+          result = await cfs.read(getPath(navKey));
+        }
+        if (result) {
+          await getDoc(navKey);
+        }
+      })
+    );
+    res.end(compileDoc({ doc, config, pugCompiler, allDocs }));
+  };
+
+  polka()
+    .use(
+      config.publicPath.replace(/\/$/, ''),
+      serveDoc,
+      sirv(config.dist, { dev: true }),
+      sirv(config.src, { dev: true })
+    )
+    .listen(config.port, (err) => {
+      if (err) throw err;
+      console.log(`> Running ${config.org} on http://localhost:${config.port}`);
+    });
+};
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
   docs = await Promise.all(docs.map(d => {
