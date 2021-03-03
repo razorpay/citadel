@@ -2,7 +2,12 @@
 const glob = require('glob').sync;
 const frontMatter = require('front-matter');
 const argv = require('yargs-parser')(process.argv.slice(2));
-const { cfs, getDocumentsRoot, getDocumentsGlob } = require('./fs-helpers');
+const {
+  cfs,
+  dir,
+  getDocumentsRoot,
+  getDocumentsGlob,
+} = require('./fs-helpers');
 const { readConfig } = require('./read-config');
 const path = require('path');
 const { execSync, spawn } = require('child_process');
@@ -11,7 +16,13 @@ const isServer = argv._.indexOf('serve') !== -1;
 const { serve, build } = require('./server');
 
 const markdownExtension = '.md';
-readConfig().then(configs => configs.forEach(compile));
+readConfig().then((configs) => {
+  return Promise.all(
+    configs.map(async (config) => {
+      await compile(config);
+    })
+  );
+});
 
 async function compile(config) {
   const documentsRoot = getDocumentsRoot(config);
@@ -58,10 +69,10 @@ async function getFormattedDoc({ allDocs, getPath }) {
       frontMatter: attributes,
       body,
       href,
-      tree: formatTree(attributes.tree || ''),
+      tree: formatTree({ tree: attributes.tree || '', key }),
     };
     allDocs[key] = doc;
-    doc.index = await getIndex(doc);
+    doc.index = await getIndex({ doc, getPath, getDoc });
     if (doc.index !== key) {
       const indexDoc = allDocs[doc.index];
       doc.frontMatter = { ...indexDoc.frontMatter, ...attributes };
@@ -70,7 +81,7 @@ async function getFormattedDoc({ allDocs, getPath }) {
   };
 }
 
-function formatTree(tree) {
+function formatTree({ tree, key }) {
   return tree
     .split('\n')
     .filter((_) => _)
@@ -88,7 +99,7 @@ function formatTree(tree) {
     });
 }
 
-async function getIndex(doc) {
+async function getIndex({ doc, getPath, getDoc }) {
   if (doc.frontMatter.tree) {
     return doc.key;
   }

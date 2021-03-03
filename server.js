@@ -16,7 +16,7 @@ const markdown = require('./scripts/md');
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 
 function init({ allDocs, config, watch, getKey }) {
-  config.plugins.forEach(initializePlugin);
+  config.plugins.forEach((plugin) => initializePlugin(plugin, config));
 
   if (watch) {
     chokidar.add([config.src, config.partials]).on('all', (event, filepath) => {
@@ -113,8 +113,8 @@ function getNav(doc, allDocs, config) {
 function compileDoc({ doc, config, pugCompiler, allDocs }) {
   let content = atRules(doc.body, config);
   const parsedContent = markdown(content, config);
-  const result = plugins.reduce(function (acc, plugin) {
-    return applyPlugin({ plugin, content: parsedContent });
+  const result = config.plugins.reduce(function (acc, plugin) {
+    return applyPlugin({ plugin, content: acc });
   }, parsedContent);
   return pugCompiler({
     ...doc,
@@ -182,7 +182,7 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
-  plugins.forEach(cleanupPlugin);
+  config.plugins.forEach(cleanupPlugin);
 }
 
 function checkAllowed(key, config) {

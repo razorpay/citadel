@@ -1,9 +1,22 @@
-const { getPluginsRoot, cfs } = require('./fs-helpers');
-const { appendPluginDefinition } = require('./plugins'); 
+const path = require('path');
+const argv = require('yargs-parser')(process.argv.slice(2));
+const { appendPluginDefinition } = require('./plugins');
+
+function normaliseConfigList(configList) {
+  if (configList) {
+    if (Array.isArray(configList)) {
+      return configList;
+    }
+    return [configList];
+  }
+  return [];
+}
 
 function readConfig() {
-  const config = require(path.resolve(argv.c || 'config.js'));
-  return appendPluginDefinition(config);
+  const configList = require(path.resolve(argv.c || 'config.js'));
+  const normalisedConfigList = normaliseConfigList(configList);
+  // console.trace('Config', config);
+  return Promise.all(normalisedConfigList.map(appendPluginDefinition));
 }
 
 module.exports = {
