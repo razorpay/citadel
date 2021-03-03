@@ -2,7 +2,7 @@
 const glob = require('glob').sync;
 const frontMatter = require('front-matter');
 const argv = require('yargs-parser')(process.argv.slice(2));
-const cfs = require('./scripts/cfs');
+const { cfs, getDocumentsRoot, getDocumentsGlob } = require('./fs-helpers');
 const path = require('path');
 const { execSync, spawn } = require('child_process');
 
@@ -10,16 +10,6 @@ const isServer = argv._.indexOf('serve') !== -1;
 const { serve, build } = require('./server');
 
 const markdownExtension = '.md';
-const getDocumentsRoot = (config) => path.resolve(config.src);
-const getDocumentsGlob = (config) =>
-  `${getDocumentsRoot(config)}/**/*${markdownExtension}`;
-const dir = (str) => str.replace(/\/[^/]+$/, '');
-
-function readConfig() {
-  const config = require(path.resolve(argv.c || 'config.js'));
-  return config;
-}
-
 readConfig().forEach(compile);
 
 async function compile(config) {
@@ -28,7 +18,7 @@ async function compile(config) {
     path.slice(documentsRoot.length + 1, -markdownExtension.length);
   const getPath = (key) => documentsRoot + '/' + key + markdownExtension;
   const allDocs = {};
-  const getDoc = getFormattedDoc(allDocs);
+  const getDoc = await getFormattedDoc({ allDocs, getPath });
 
   if (isServer) {
     serve({
@@ -42,14 +32,14 @@ async function compile(config) {
     build({
       config,
       getDoc,
-      docs: glob(getDocumentsGlob(config)),
+      docs: glob(getDocumentsGlob(config, markdownExtension)),
       getKey,
       allDocs,
     });
   }
 }
 
-function getFormattedDoc(allDocs) {
+async function getFormattedDoc({ allDocs, getPath }) {
   return async function getDoc(key) {
     if (allDocs.hasOwnProperty(key)) return allDocs[key];
 
