@@ -3,6 +3,7 @@ const glob = require('glob').sync;
 const frontMatter = require('front-matter');
 const argv = require('yargs-parser')(process.argv.slice(2));
 const { cfs, getDocumentsRoot, getDocumentsGlob } = require('./fs-helpers');
+const { readConfig } = require('./read-config');
 const path = require('path');
 const { execSync, spawn } = require('child_process');
 
@@ -10,7 +11,7 @@ const isServer = argv._.indexOf('serve') !== -1;
 const { serve, build } = require('./server');
 
 const markdownExtension = '.md';
-readConfig().forEach(compile);
+readConfig().then(configs => configs.forEach(compile));
 
 async function compile(config) {
   const documentsRoot = getDocumentsRoot(config);
