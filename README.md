@@ -30,6 +30,8 @@ Tree:
 
 Citadel can accept a list of plugins in the config. The plugins need to have the following api:
 
+- **name**: Name of the plugin.
+  - Note: This will be used in log statements. Any name conflicts won't affect the functionality.
 - **init**: Function that would be called at the start of the build process.
   - This function can be used by the plugin to instantiate itself. Example: setup local state.
   - init: function(config: object): void

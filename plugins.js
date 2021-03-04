@@ -36,6 +36,25 @@ function validatePluginDefinition(plugin) {
   }
 }
 
+const getPluginPath = ({ plugin, root }) => root + '/' + plugin + '.js';
+
+function getPluginDefinition({ plugin, root }) {
+  return new Promise(function getDefinition(resolve, reject) {
+    try {
+      const getPlugin = require(getPluginPath({ plugin, root }));
+      const isFunction = typeof getPlugin === 'function';
+      if (isFunction) {
+        const definition = getPlugin();
+        resolve(definition);
+      } else {
+        throw new Error('Exported entity for plugin ' + plugin + ' is not a function.');
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 async function appendPluginDefinition(config) {
   const { plugins } = config;
   if (!isPluginListDefined(plugins)) {
@@ -43,22 +62,14 @@ async function appendPluginDefinition(config) {
     return config;
   }
 
-  const pluginRoot = getPluginsRoot(config);
-  const getPluginPath = (plugin) => pluginRoot + '/' + plugin + '.js';
+  const root = getPluginsRoot(config);
 
   config.plugins = (
     await Promise.all(
       plugins.map(async (plugin) => {
         let pluginDefinition;
         try {
-          pluginDefinition = await new Promise((resolve, reject) => {
-            try {
-              const definition = require(getPluginPath(plugin));
-              resolve(definition);
-            } catch (error) {
-              reject(error);
-            }
-          });
+          pluginDefinition = await getPluginDefinition({ plugin, root });
         } catch (error) {
           console.error('Error loading plugin ', plugin);
           console.trace(error);
