@@ -28,7 +28,7 @@
     "pug": "^3.0.2",
     "sirv": "^1.0.11",
     "stylus": "^0.54.8",
-    "webpack": "^5.24.3",
+    "webpack": "^5.24.4",
     "yargs-parser": "^20.2.6"
   },
   "scripts": {
