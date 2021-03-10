@@ -29,7 +29,7 @@
     "sirv": "^1.0.11",
     "stylus": "^0.54.8",
     "webpack": "^5.24.3",
-    "yargs-parser": "^20.2.6"
+    "yargs-parser": "^20.2.7"
   },
   "scripts": {
     "start": "node index serve",
