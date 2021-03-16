@@ -176,7 +176,7 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
       .filter((_) => _)
   );
   const { pugCompiler } = init({ config });
-  execSync(`cp -r ${config.src}/* ${config.dist}/; rm ${config.dist}/**/*.md`);
+  execSync(`cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`);
   docs.forEach((doc) => {
     const html = compileDoc({ doc, config, pugCompiler, allDocs });
     const filepath = config.dist + '/' + doc.href + '/index.html';
