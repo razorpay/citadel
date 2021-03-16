@@ -36,28 +36,28 @@ function getAttrs(openTag) {
 };
 
 module.exports = function(body, config) {
-  return body.replace(/^\s*<img([^>]*)\/?>/mg, function(openTag) {
-    attrs = getAttrs(openTag);
-    if (attrs.src) {
-      attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
-    }
-    attrs.class = 'click-zoom';
-    return `\n<img${Object.keys(attrs).map(k => ` ${k}="${attrs[k]}"`)}>\n`;
-  }).replace(/^(\s*)@(\/\/|image|include)(.*)$/mg, function(
-    _,
-    indent,
-    rule,
-    rest,
-  ) {
-    rest = rest.split(/\s+/).filter(_ => _);
-    return blockRules[rule](rest, config);
-  }).replace(/^(<show-if[^>]*>)(.*?)^<\/show-if>/mgs, function(
-    _,
-    openTag,
-    content,
-  ) {
-    attrs = getAttrs(openTag);
-    if (config.org === attrs.org) return content;
-    return '';
-  })
+  return body
+    .replace(/^\s*<img([^>]*)\/?>/gm, function (openTag) {
+      attrs = getAttrs(openTag);
+      if (attrs.src) {
+        attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
+      }
+      attrs.class = 'click-zoom';
+      return `\n<img${Object.keys(attrs).map((k) => ` ${k}="${attrs[k]}"`)}>\n`;
+    })
+    .replace(
+      /^(\s*)@(\/\/|image|include)(.*)$/gm,
+      function (_, indent, rule, rest) {
+        rest = rest.split(/\s+/).filter((_) => _);
+        return blockRules[rule](rest, config);
+      }
+    )
+    .replace(
+      /^(\s*)(<show-if[^>]*>)(.*?)<\/show-if>/gms,
+      function (_, indent, openTag, content, ...args) {
+        attrs = getAttrs(openTag);
+        if (config.org === attrs.org) return `${indent}${content}`;
+        return '';
+      }
+    );
 };
