@@ -54,7 +54,7 @@ module.exports = function (body, config) {
     )
     .replace(
       /^(\s*)(<show-if[^>]*>)(.*?)<\/show-if>/gms,
-      function (_, indent, openTag, content, ...args) {
+      function (_, indent, openTag, content) {
         attrs = getAttrs(openTag);
         if (config.org === attrs.org) return `${indent}${content}`;
         return '';
