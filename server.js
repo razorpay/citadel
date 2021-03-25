@@ -66,6 +66,7 @@ function generateJs({ config }) {
       new webpack.DefinePlugin({
         ORG: JSON.stringify(config.org),
         PUBLIC_PATH: JSON.stringify(config.publicPath),
+        DASHBOARD_URL: JSON.stringify(config.dashboardUrl),
       }),
     ],
     entry: process.env.PWD + '/' + config.js,
