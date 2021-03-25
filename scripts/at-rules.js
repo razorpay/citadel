@@ -37,14 +37,6 @@ function getAttrs(openTag) {
 
 module.exports = function (body, config) {
   return body
-    .replace(/^(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
-      attrs = getAttrs(openTag);
-      if (attrs.src) {
-        attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
-      }
-      attrs.class = 'click-zoom';
-      return `\n${indent}<img${Object.keys(attrs).map((k) => ` ${k}="${attrs[k]}"`)}>\n`;
-    })
     .replace(
       /^(\s*)@(\/\/|image|include)(.*)$/gm,
       function (_, indent, rule, rest) {
@@ -58,6 +50,36 @@ module.exports = function (body, config) {
         attrs = getAttrs(openTag);
         if (config.org === attrs.org) return `${indent}${content}`;
         return '';
+      }
+    )
+    .replace(/^(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
+      attrs = getAttrs(openTag);
+      if (attrs.src) {
+        const isInternalImage = attrs.src.startsWith('/docs/');
+        if (isInternalImage) {
+          attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
+        }
+      }
+      attrs.class = 'click-zoom';
+      const updatedAttrs = Object.keys(attrs)
+        .map((k) => ` ${k}="${attrs[k]}"`)
+        .join(' ');
+      return `\n${indent}<img${updatedAttrs}>\n`;
+    })
+    .replace(
+      /(\s*)(<a([^>]*?)>)(.*?)<\/a>/gm,
+      function (_, indent, openTag, __, content) {
+        attrs = getAttrs(openTag);
+        if (attrs.href) {
+          const isInternalLink = attrs.href.startsWith('/docs/');
+          if (isInternalLink) {
+            attrs.href = attrs.href.replace(/^\/docs\//, config.publicPath);
+          }
+        }
+        const updatedAttrs = Object.keys(attrs)
+          .map((k) => ` ${k}="${attrs[k]}"`)
+          .join(' ');
+        return `${indent}<a${updatedAttrs}>${content}</a>`;
       }
     );
 };
