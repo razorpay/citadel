@@ -61,6 +61,13 @@ async function generateCss({ config }) {
 function generateJs({ config }) {
   const webpackConfig = {
     ...webpackConfigBase,
+    plugins: [
+      ...webpackConfigBase.plugins,
+      new webpack.DefinePlugin({
+        ORG: JSON.stringify(config.org),
+        PUBLIC_PATH: JSON.stringify(config.publicPath),
+      }),
+    ],
     entry: process.env.PWD + '/' + config.js,
     output: {
       path: path.resolve(config.dist),
