@@ -101,10 +101,7 @@ function getMd(config) {
   md.block.ruler.at('fence', customFence(md));
   const normalizeLink = md.normalizeLink;
   md.normalizeLink = (url) => {
-    //rewrite url
-    console.log('link ', url);
     const customUrl = customLink(url, config);
-    console.log('Normalize link ', customUrl);
     return normalizeLink(customUrl);
   };
   return md;
