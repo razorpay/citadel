@@ -125,7 +125,7 @@ function compileDoc({ doc, config, pugCompiler, allDocs }) {
   });
 }
 
-const serve = async ({ config, getDoc, getPath, allDocs, getKey }) => {
+const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
     let key = req.path.slice(1).replace(/\/$/, '');
