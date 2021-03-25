@@ -4,6 +4,7 @@ const readFileSync = (file) => fs.readFileSync(file, 'utf8');
 const noop = () => {};
 const cfs = require('./cfs');
 const htmlparser = require('htmlparser2');
+const customLink = require('./custom-link');
 
 // block rules are always functions
 // called with `md` as context
@@ -71,10 +72,7 @@ module.exports = function (body, config) {
       function (_, indent, openTag, __, content) {
         attrs = getAttrs(openTag);
         if (attrs.href) {
-          const isInternalLink = attrs.href.startsWith('/docs/');
-          if (isInternalLink) {
-            attrs.href = attrs.href.replace(/^\/docs\//, config.publicPath);
-          }
+          attrs.href = customLink(attrs.href, config);
         }
         const updatedAttrs = Object.keys(attrs)
           .map((k) => ` ${k}="${attrs[k]}"`)

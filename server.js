@@ -12,7 +12,7 @@ const { exec, execSync } = require('child_process');
 const cfs = require('./scripts/cfs');
 const atRules = require('./scripts/at-rules');
 const customHtml = require('./scripts/custom-html');
-const markdown = require('./scripts/md');
+const getMarkdown = require('./scripts/md');
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 
 function init({ allDocs, config, watch, getKey }) {
@@ -84,7 +84,7 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || (allDocs[key]?.frontMatter.title || "");
+    const title = d.title || allDocs[key]?.frontMatter.title || '';
 
     const item = {
       key,
@@ -110,7 +110,7 @@ function getNav(doc, allDocs, config) {
   return nav;
 }
 
-function compileDoc({ doc, config, pugCompiler, allDocs }) {
+function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   let content = atRules(doc.body, config);
   const parsedContent = markdown(content, config);
   const result = config.plugins.reduce(function (acc, plugin) {
@@ -125,6 +125,7 @@ function compileDoc({ doc, config, pugCompiler, allDocs }) {
 }
 
 const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
+  const markdown = getMarkdown(config);
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
     let key = req.path.slice(1).replace(/\/$/, '');
@@ -149,7 +150,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
         }
       })
     );
-    res.end(compileDoc({ doc, config, pugCompiler, allDocs }));
+    res.end(compileDoc({ doc, config, pugCompiler, allDocs, markdown }));
     config.plugins.forEach(cleanupPlugin);
   };
 
@@ -167,6 +168,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
 };
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
+  const markdown = getMarkdown(config);
   docs = await Promise.all(
     docs
       .map((d) => {
@@ -176,9 +178,11 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
       .filter((_) => _)
   );
   const { pugCompiler } = init({ config });
-  execSync(`cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`);
+  execSync(
+    `cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`
+  );
   docs.forEach((doc) => {
-    const html = compileDoc({ doc, config, pugCompiler, allDocs });
+    const html = compileDoc({ doc, config, pugCompiler, allDocs, markdown });
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
