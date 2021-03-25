@@ -6,6 +6,7 @@ const pug = require('pug');
 const chokidar = require('chokidar').watch([]);
 const webpack = require('webpack');
 const stylus = require('stylus');
+const yaml = require('js-yaml');
 const webpackConfigBase = require('./webpack.config');
 const { exec, execSync } = require('child_process');
 
@@ -84,7 +85,7 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || (allDocs[key]?.frontMatter.title || "");
+    const title = d.title || allDocs[key]?.frontMatter.title || '';
 
     const item = {
       key,
@@ -124,7 +125,7 @@ function compileDoc({ doc, config, pugCompiler, allDocs }) {
   });
 }
 
-const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
+const serve = async ({ config, getDoc, getPath, allDocs, getKey }) => {
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
     let key = req.path.slice(1).replace(/\/$/, '');
@@ -164,6 +165,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
       if (err) throw err;
       console.log(`> Running ${config.org} on http://localhost:${config.port}`);
     });
+  createRedirects(config);
 };
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
@@ -176,12 +178,15 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
       .filter((_) => _)
   );
   const { pugCompiler } = init({ config });
-  execSync(`cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`);
+  execSync(
+    `cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`
+  );
   docs.forEach((doc) => {
     const html = compileDoc({ doc, config, pugCompiler, allDocs });
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
+  await createRedirects(config);
   config.plugins.forEach(cleanupPlugin);
 }
 
@@ -193,6 +198,22 @@ function checkAllowed(key, config) {
     }
   });
   return allow;
+}
+
+async function createRedirects(config) {
+  const BASE_PATH = config.basePath + config.publicPath;
+  const DIST_DIR = config.dist;
+  const REDIRECTS_FILE_PATH = process.env.PWD + '/' + config.redirects;
+  const redirectContent = await fs.readFile(REDIRECTS_FILE_PATH);
+  const redirects = yaml.load(redirectContent);
+  await Promise.all(
+    Object.keys(redirects).map(async (origin) => {
+      const url = new URL(BASE_PATH + redirects[origin]);
+      const html = `<html><head><meta http-equiv="refresh" content="0;URL=${url}"/></head></html>`;
+      await exec(`mkdir -p ${DIST_DIR}/${origin}/`);
+      await fs.writeFile(`${DIST_DIR}/${origin}/index.html`, html);
+    })
+  );
 }
 
 module.exports = {
