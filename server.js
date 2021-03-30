@@ -7,11 +7,11 @@ const chokidar = require('chokidar').watch([]);
 const webpack = require('webpack');
 const stylus = require('stylus');
 const webpackConfigBase = require('./webpack.config');
-const { exec, execSync } = require('child_process');
+const { execSync } = require('child_process');
+const createRedirects = require('./create-redirects');
 
 const cfs = require('./scripts/cfs');
 const atRules = require('./scripts/at-rules');
-const customHtml = require('./scripts/custom-html');
 const markdown = require('./scripts/md');
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 
@@ -84,7 +84,7 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || (allDocs[key]?.frontMatter.title || "");
+    const title = d.title || allDocs[key]?.frontMatter.title || '';
 
     const item = {
       key,
@@ -164,6 +164,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
       if (err) throw err;
       console.log(`> Running ${config.org} on http://localhost:${config.port}`);
     });
+  createRedirects(config);
 };
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
@@ -176,12 +177,15 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
       .filter((_) => _)
   );
   const { pugCompiler } = init({ config });
-  execSync(`cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`);
+  execSync(
+    `cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`
+  );
   docs.forEach((doc) => {
     const html = compileDoc({ doc, config, pugCompiler, allDocs });
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
+  await createRedirects(config);
   config.plugins.forEach(cleanupPlugin);
 }
 
