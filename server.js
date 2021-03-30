@@ -196,7 +196,7 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
-  await createRedirects(config);
+  createRedirects(config);
   config.plugins.forEach(cleanupPlugin);
 }
 
