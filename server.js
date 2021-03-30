@@ -7,12 +7,13 @@ const chokidar = require('chokidar').watch([]);
 const webpack = require('webpack');
 const stylus = require('stylus');
 const webpackConfigBase = require('./webpack.config');
-const { exec, execSync } = require('child_process');
+const { execSync } = require('child_process');
+const createRedirects = require('./create-redirects');
 
 const cfs = require('./scripts/cfs');
 const atRules = require('./scripts/at-rules');
-const customHtml = require('./scripts/custom-html');
 const getMarkdown = require('./scripts/md');
+
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 
 function init({ allDocs, config, watch, getKey }) {
@@ -173,6 +174,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
       if (err) throw err;
       console.log(`> Running ${config.org} on http://localhost:${config.port}`);
     });
+  createRedirects(config);
 };
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
@@ -194,6 +196,7 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
+  await createRedirects(config);
   config.plugins.forEach(cleanupPlugin);
 }
 
