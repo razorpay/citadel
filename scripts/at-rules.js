@@ -4,6 +4,7 @@ const readFileSync = (file) => fs.readFileSync(file, 'utf8');
 const noop = () => {};
 const cfs = require('./cfs');
 const htmlparser = require('htmlparser2');
+const customLink = require('./custom-link');
 
 // block rules are always functions
 // called with `md` as context
@@ -37,14 +38,6 @@ function getAttrs(openTag) {
 
 module.exports = function (body, config) {
   return body
-    .replace(/^(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
-      attrs = getAttrs(openTag);
-      if (attrs.src) {
-        attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
-      }
-      attrs.class = 'click-zoom';
-      return `\n${indent}<img${Object.keys(attrs).map((k) => ` ${k}="${attrs[k]}"`)}>\n`;
-    })
     .replace(
       /^(\s*)@(\/\/|image|include)(.*)$/gm,
       function (_, indent, rule, rest) {
@@ -58,6 +51,33 @@ module.exports = function (body, config) {
         attrs = getAttrs(openTag);
         if (config.org === attrs.org) return `${indent}${content}`;
         return '';
+      }
+    )
+    .replace(/^(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
+      attrs = getAttrs(openTag);
+      if (attrs.src) {
+        const isInternalImage = attrs.src.startsWith('/docs/');
+        if (isInternalImage) {
+          attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
+        }
+      }
+      attrs.class = 'click-zoom';
+      const updatedAttrs = Object.keys(attrs)
+        .map((k) => ` ${k}="${attrs[k]}"`)
+        .join(' ');
+      return `\n${indent}<img${updatedAttrs}>\n`;
+    })
+    .replace(
+      /(\s*)(<a([^>]*?)>)(.*?)<\/a>/gm,
+      function (_, indent, openTag, __, content) {
+        attrs = getAttrs(openTag);
+        if (attrs.href) {
+          attrs.href = customLink(attrs.href, config);
+        }
+        const updatedAttrs = Object.keys(attrs)
+          .map((k) => ` ${k}="${attrs[k]}"`)
+          .join(' ');
+        return `${indent}<a${updatedAttrs}>${content}</a>`;
       }
     );
 };
