@@ -13,7 +13,7 @@ const blockRules = {
   '//': (a) => '',
 
   image: function (rest, config) {
-    return `<img src="/${config.publicPath}/assets/images/${rest[0]}"/>`;
+    return `<img src="${config.publicPath}assets/images/${rest[0]}"/>`;
   },
 
   // include another markdown
