@@ -2,7 +2,7 @@ const yaml = require('js-yaml');
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-function getRedirectPaths(config) {
+function getRedirectList(config) {
   if (config.redirects) {
     if (Array.isArray(config.redirects)) {
       return config.redirects;
@@ -12,19 +12,20 @@ function getRedirectPaths(config) {
   return [];
 }
 
+function getRedirectPaths(config) {
+  const redictList = getRedirectList(config);
+  return redictList.map((redirect) => process.env.PWD + '/' + redirect);
+}
+
 function createRedirects(config) {
   const BASE_PATH = config.basePath + config.publicPath;
   const DIST_DIR = config.dist;
-  const redictPaths = getRedirectPaths(config);
-  const redirectFilePaths = redictPaths.map(
-    (redirect) => process.env.PWD + '/' + redirect
-  );
+  const redirectFilePaths = getRedirectPaths(config);
   const redirectList = redirectFilePaths.reduce((acc, redirectFilePath) => {
     const content = fs.readFileSync(redirectFilePath);
     return acc + '\n' + content;
   }, '');
   const redirects = yaml.load(redirectList);
-  console.log(redirects);
   Object.keys(redirects).map((origin) => {
     const url = new URL(BASE_PATH + redirects[origin]);
     const html = `<html><head><meta http-equiv="refresh" content="0;URL=${url}"/></head></html>`;
