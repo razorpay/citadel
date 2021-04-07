@@ -20,7 +20,9 @@ const blockRules = {
   include: function (rest, config) {
     /* Sample use in *.md files */
     // e.g. @include part1
-    return cfs.readSync(`${config.partials}/${rest[0]}.md`);
+    const content = cfs.readSync(`${config.partials}/${rest[0]}.md`);
+    // adding a space as html elements require a black line before them.
+    return `\n${content}`
   },
 };
 
