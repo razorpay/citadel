@@ -1,14 +1,12 @@
-const fs = require('fs').promises;
 const path = require('path');
 const polka = require('polka');
 const sirv = require('sirv');
 const pug = require('pug');
 const chokidar = require('chokidar').watch([]);
-const webpack = require('webpack');
-const stylus = require('stylus');
-const webpackConfigBase = require('./webpack.config');
 const { execSync } = require('child_process');
 const createRedirects = require('./create-redirects');
+const generateCss = require('./generate-css');
+const generateJs = require('./generate-js');
 
 const cfs = require('./scripts/cfs');
 const atRules = require('./scripts/at-rules');
@@ -46,41 +44,6 @@ function init({ allDocs, config, watch, getKey }) {
   return {
     pugCompiler: pug.compileFile(config.layout),
   };
-}
-
-async function generateCss({ config }) {
-  const css = await fs.readFile(config.css);
-  stylus.render(String(css), { filename: config.css }, function (err, css) {
-    if (err) throw err;
-    fs.writeFile(
-      config.dist + '/' + path.basename(config.css, '.styl') + '.css',
-      css
-    );
-  });
-}
-
-function generateJs({ config }) {
-  const webpackConfig = {
-    ...webpackConfigBase,
-    plugins: [
-      ...webpackConfigBase.plugins,
-      new webpack.DefinePlugin({
-        ORG: JSON.stringify(config.org),
-        PUBLIC_PATH: JSON.stringify(config.publicPath),
-        DASHBOARD_URL: JSON.stringify(config.dashboardUrl),
-      }),
-    ],
-    entry: process.env.PWD + '/' + config.js,
-    output: {
-      path: path.resolve(config.dist),
-    },
-  };
-  webpack(webpackConfig, (err, stats) => {
-    if (err) {
-      return console.error(err);
-    }
-    console.log(stats.toString({ colors: true }));
-  });
 }
 
 function getNav(doc, allDocs, config) {

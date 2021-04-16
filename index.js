@@ -10,7 +10,6 @@ const {
 } = require('./fs-helpers');
 const { readConfig } = require('./read-config');
 const path = require('path');
-const { execSync, spawn } = require('child_process');
 
 const isServer = argv._.indexOf('serve') !== -1;
 const { serve, build } = require('./server');
