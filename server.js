@@ -88,6 +88,7 @@ function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   const parsedContentWithFrontmatter = {
     ...parsedContent,
     ...doc.frontMatter,
+    body: doc.body,
     href: doc.href,
   };
   const result = config.plugins.reduce(function (acc, plugin) {
