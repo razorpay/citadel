@@ -85,9 +85,10 @@ function getNav(doc, allDocs, config) {
 function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   let content = atRules(doc.body, config);
   const parsedContent = markdown(content, config);
+  const parsedContentWithFrontmatter = { ...parsedContent, ...doc.frontMatter };
   const result = config.plugins.reduce(function (acc, plugin) {
     return applyPlugin({ plugin, content: acc });
-  }, parsedContent);
+  }, parsedContentWithFrontmatter);
   return pugCompiler({
     ...doc,
     ...result,
