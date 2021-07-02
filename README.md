@@ -11,8 +11,13 @@ Citadel is an extensible static site generator. It takes markdown files and gene
 - Reusability (with the help of partials)
 - Easy redirects
 - Document blacklist support
-
 ## Setup
+
+To install Citadel in your project
+
+```
+  npm install https://github.com/razorpay/citadel
+```
 
 Citadel requires a *config* file to be present in the root directory of your project.
 The name of the config file can be given through command line as follows
@@ -66,9 +71,40 @@ module.exports = [{
   }],
 ```
 
+## Usage
+
+
+### Layout
+The pug template present in the `layout` variable in the `config` will get the following variables
+
+```
+{
+  frontmatter: Object, // The frontmatter defined in each post
+  href: string, // The url based on the folder structure
+  content: string, // The html generated from the body of each post
+  config: Object, // The config object defined above
+  nav: Array<Link>, // An array of Link objects
+}
+```
+
+The `Link` object structure is as below
+
+```
+{
+  level: number, // the depth level of the nav
+  active: boolean, // true if this item is currently selected
+  href: string, // url associated with the Link
+  title: string, // title specified for the Link
+  children: Array<Link> // List of child Links
+}
+```
+
+This nav list is generated from the tree defined in the frontmatter of each index document under the `src` folder specified in the config.
+
+## Internals
 ### Document structure
 
-Following is the structure of the document parsed and generated from Citadel
+Following is the structure of the document parsed and generated from Citadel.
 
 ```js
 Document:
