@@ -2,6 +2,9 @@ const fs = require('fs').promises;
 const { readFileSync } = require('fs');
 const path = require('path');
 
+const getIndexPath = (filePath) =>
+  filePath.substring(0, filePath.length - 3) + '/index.md';
+
 function CachedFS() {
   const cache = {};
   const dirs = {};
@@ -11,15 +14,36 @@ function CachedFS() {
     },
     read(filepath) {
       if (!cache.hasOwnProperty(filepath)) {
-        cache[filepath] = new Promise(resolve => {
-          fs.readFile(filepath).then(data => resolve(String(data))).catch(e => resolve());
+        cache[filepath] = new Promise((resolve) => {
+          fs.readFile(filepath)
+            .then((data) => resolve(String(data)))
+            .catch((e) => {
+              const indexFilePath = getIndexPath(filepath);
+              fs.readFile(indexFilePath)
+                .then((data) => resolve(String(data)))
+                .catch(() => {
+                  console.warn('File not found', filepath);
+                  resolve();
+                });
+            });
         });
       }
       return cache[filepath];
     },
     readSync(filepath) {
       if (!cache.hasOwnProperty(filepath)) {
-        cache[filepath] = String(readFileSync(filepath));
+        let content;
+        try {
+          content = readFileSync(filepath);
+        } catch (error) {
+          const indexFilePath = getIndexPath(filepath);
+          try {
+            content = readFileSync(indexFilePath);
+          } catch (error) {
+            console.warn('File not found', filepath);
+          }
+        }
+        cache[filepath] = String(content);
       }
       return cache[filepath];
     },
@@ -38,8 +62,8 @@ function CachedFS() {
         });
       }
       return dirs[name];
-    }
-  }
+    },
+  };
 }
 
 module.exports = CachedFS();
