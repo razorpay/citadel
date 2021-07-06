@@ -29,7 +29,7 @@
     "pug": "^3.0.2",
     "sirv": "^1.0.12",
     "stylus": "^0.54.8",
-    "webpack": "^5.38.1",
+    "webpack": "^5.43.0",
     "yargs-parser": "^20.2.7"
   },
   "scripts": {
