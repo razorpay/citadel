@@ -63,7 +63,6 @@ module.exports = function (body, config) {
           attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
         }
       }
-      attrs.class = 'click-zoom';
       const updatedAttrs = Object.keys(attrs)
         .map((k) => ` ${k}="${attrs[k]}"`)
         .join(' ');
