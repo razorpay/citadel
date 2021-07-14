@@ -22,7 +22,7 @@ const blockRules = {
     // e.g. @include part1
     const content = cfs.readSync(`${config.partials}/${rest[0]}.md`);
     // adding a space as html elements require a black line before them.
-    return `\n${content}`
+    return `\n${content}`;
   },
 };
 
@@ -63,7 +63,7 @@ module.exports = function (body, config) {
           attrs.src = attrs.src.replace(/^\/docs\//, config.publicPath);
         }
       }
-      attrs.class = 'click-zoom';
+      attrs.class = attrs.class ? attrs.class : 'click-zoom'; // overriding class for now
       const updatedAttrs = Object.keys(attrs)
         .map((k) => ` ${k}="${attrs[k]}"`)
         .join(' ');

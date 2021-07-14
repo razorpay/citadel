@@ -54,7 +54,7 @@ const customHtml = {
 
   img: function(html, attributes, config) {
     attributes.src = attributes.src.replace(/^\/docs\//, config.publicPath);
-    attributes.class = 'click-zoom';
+    attributes.class = attributes.class ? attributes.class : 'click-zoom';
     return `<img${attrs(attributes)}>`;
   }
 };
