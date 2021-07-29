@@ -2,8 +2,14 @@ const fs = require('fs').promises;
 const { readFileSync: readSync } = require('fs');
 const path = require('path');
 
-const getIndexPath = (filePath) =>
-  filePath.substring(0, filePath.length - 3) + '/index.md';
+const getIndexPath = (filePath) => {
+  const fileExtension = path.extname(filePath);
+  const fileName = path.basename(filePath, fileExtension);
+  if (fileExtension === '.md' && fileName !== 'index') {
+    return path.dirname(filePath) + `/${fileName}/index.md`;
+  }
+  return '';
+};
 
 async function readFile(filePath) {
   let content;
@@ -12,6 +18,9 @@ async function readFile(filePath) {
   } catch (error) {
     const indexFilePath = getIndexPath(filePath);
     try {
+      if (indexFilePath === '') {
+        throw error;
+      }
       content = await fs.readFile(indexFilePath);
     } catch (error) {
       console.error('Error: File not found', filePath);
@@ -28,6 +37,9 @@ function readFileSync(filePath) {
   } catch (error) {
     const indexFilePath = getIndexPath(filePath);
     try {
+      if (indexFilePath === '') {
+        throw error;
+      }
       content = readSync(indexFilePath);
     } catch (error) {
       console.error('Error: File not found', filePath);
