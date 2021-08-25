@@ -11,6 +11,7 @@ function generateJs({ config }) {
         ORG: JSON.stringify(config.org),
         PUBLIC_PATH: JSON.stringify(config.publicPath),
         DASHBOARD_URL: JSON.stringify(config.dashboardUrl),
+        X_DASHBOARD_URL: JSON.stringify(config.xDashboardUrl),
       }),
     ],
     entry: process.env.PWD + '/' + config.js,
