@@ -1,5 +1,5 @@
 const path = require('path');
-const polka = require('polka');
+const express = require('express');
 const sirv = require('sirv');
 const pug = require('pug');
 const chokidar = require('chokidar').watch([]);
@@ -132,7 +132,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     config.plugins.forEach(cleanupPlugin);
   };
 
-  polka()
+  express()
     .use(
       config.publicPath.replace(/\/$/, ''),
       serveDoc,
