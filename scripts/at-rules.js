@@ -55,6 +55,14 @@ module.exports = function (body, config) {
         return '';
       }
     )
+    .replace(
+      /^(\s*)(<file[^>]*>)(.*?)<\/file>/gms,
+      function (_, indent, openTag, content) {
+        attrs = getAttrs(openTag);
+        const updatedContent = `<a href="${attrs.href}" target="_blank" rel="noreferrer">${content}</a>`;
+        return `${indent}${updatedContent}`;
+      }
+    )
     .replace(/^(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
       attrs = getAttrs(openTag);
       if (attrs.src) {
