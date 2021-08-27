@@ -16,6 +16,8 @@ const tokenFn = (state) => (type, tag, nesting, opts) => {
   return token;
 };
 
+const anchorTags = ['h1', 'h2', 'h3', 'h4'];
+
 const renderPermalink = (slug, opts, state, idx) => {
   const href = opts.permalinkHref(slug, state);
   const token = tokenFn(state);
@@ -34,7 +36,7 @@ const renderPermalink = (slug, opts, state, idx) => {
     token('link_close', 'a', -1),
   ];
   const tag = state.tokens[idx].tag;
-  if (tag === 'h2' || tag === 'h1') {
+  if (anchorTags.includes(tag)) {
     anchors.push({
       href,
       level: tag.slice(1),
@@ -44,7 +46,7 @@ const renderPermalink = (slug, opts, state, idx) => {
         )
         .reduce((acc, t) => acc + t.content, ''),
     });
-    const wrapper = tag === 'h2' ? 'section' : 'article';
+    const wrapper = tag === 'h1' ? 'article' : 'section';
     if (openTags.hasOwnProperty(wrapper)) {
       if (tag === 'h1' && openTags.section) {
         state.tokens.splice(
