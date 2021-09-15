@@ -63,7 +63,7 @@ module.exports = function (body, config) {
         return `${indent}${updatedContent}`;
       }
     )
-    .replace(/^(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
+    .replace(/(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
       attrs = getAttrs(openTag);
       if (attrs.src) {
         const isInternalImage = attrs.src.startsWith('/docs/');
