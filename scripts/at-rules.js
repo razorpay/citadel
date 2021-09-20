@@ -56,7 +56,7 @@ module.exports = function (body, config) {
       }
     )
     .replace(
-      /^(\s*)(<file[^>]*>)(.*?)<\/file>/gms,
+      /(\s*)(<file[^>]*>)(.*?)<\/file>/gms,
       function (_, indent, openTag, content) {
         attrs = getAttrs(openTag);
         const updatedContent = `<a href="${attrs.href}" target="_blank" rel="noreferrer">${content}</a>`;
