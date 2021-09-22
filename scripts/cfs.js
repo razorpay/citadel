@@ -23,7 +23,6 @@ async function readFile(filePath) {
       }
       content = await fs.readFile(indexFilePath);
     } catch (error) {
-      console.error('Error: File not found', filePath);
       return;
     }
   }
@@ -42,7 +41,6 @@ function readFileSync(filePath) {
       }
       content = readSync(indexFilePath);
     } catch (error) {
-      console.error('Error: File not found', filePath);
       return;
     }
   }
