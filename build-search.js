@@ -1,3 +1,10 @@
+/**
+ * Problem 
+ * CMS content and direct changes that are done in src/routes trigger 2 separate deploy actions and due to which, search.json of one workflow is overridden by the other
+ * Due to this CMS pages changes don't show up in search results
+ * Solution 
+ * adds script for building seach.json file independently from the file build folder
+ */
 const glob = require('glob').sync;
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 const getMarkdown = require('./scripts/md');
