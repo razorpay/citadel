@@ -9,6 +9,7 @@ function generateJs({ config }) {
       ...webpackConfigBase.plugins,
       new webpack.DefinePlugin({
         ORG: JSON.stringify(config.org),
+        BASE_PATH: JSON.stringify(config.basePath),
         PUBLIC_PATH: JSON.stringify(config.publicPath),
         DASHBOARD_URL: JSON.stringify(config.dashboardUrl),
         X_DASHBOARD_URL: JSON.stringify(config.xDashboardUrl),
