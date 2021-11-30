@@ -143,7 +143,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
       if (err) throw err;
       console.log(`> Running ${config.org} on http://localhost:${config.port}`);
     });
-  createRedirects(config);
+  // createRedirects(config); not needed in case of serve
 };
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
