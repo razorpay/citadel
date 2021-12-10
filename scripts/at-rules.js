@@ -60,7 +60,7 @@ function validateRequiredAttributes(tag = '', userGivenAttributes = {}, required
   }
 }
 
-module.exports = function (body, config, title, docPath) {
+module.exports = function (body, config, docPath) {
   return body
     .replace(
       /^(\s*)@(\/\/|image|include)(.*)$/gm,

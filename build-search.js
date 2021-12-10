@@ -51,7 +51,7 @@ const build = async (config) => {
   );
 
   docsWithContent.forEach((doc) => {
-    let content = atRules(doc.body, config, doc.frontMatter.title, doc.key);
+    let content = atRules(doc.body, config, doc.key);
     const parsedContent = markdown(content, config);
     const parsedContentWithFrontmatter = {
       ...parsedContent,

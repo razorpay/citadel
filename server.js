@@ -83,7 +83,7 @@ function getNav(doc, allDocs, config) {
 }
 
 function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
-  let content = atRules(doc.body, config, doc.frontMatter.title, doc.key);
+  let content = atRules(doc.body, config, doc.key);
   const parsedContent = markdown(content, config);
   const parsedContentWithFrontmatter = {
     ...parsedContent,
@@ -143,7 +143,6 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
       if (err) throw err;
       console.log(`> Running ${config.org} on http://localhost:${config.port}`);
     });
-  createRedirects(config);
 };
 
 async function build({ config, getDoc, docs, getKey, allDocs }) {
