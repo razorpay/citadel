@@ -41,22 +41,17 @@ function validateRequiredAttributes(tag = '', userGivenAttributes = {}, required
   // else validation will run for same files for other orgs as well
   if (config.org !== 'razorpay') return;
 
-  try {
-    const requiredAttributesNotPresent = [];
-    requiredAttributes.forEach(attribute => {
-      if (!userGivenAttributes[attribute]) {
-        filesHaveSyntaxError = true;
-        requiredAttributesNotPresent.push(attribute);
-      }
-    });
-
-    if (requiredAttributesNotPresent.length) {
-      console.log(`'${requiredAttributesNotPresent.join(', ')}' missing at path: '${getDocumentsRoot(config)}/${docPath}' for '${tag.trim()}'`);
-      process.exit(1);
+  const requiredAttributesNotPresent = [];
+  requiredAttributes.forEach(attribute => {
+    if (!userGivenAttributes[attribute]) {
+      filesHaveSyntaxError = true;
+      requiredAttributesNotPresent.push(attribute);
     }
-  } catch(err) {
-    console.log(err);
-    // don't want to break the build if some logic messes up here
+  });
+
+  if (requiredAttributesNotPresent.length) {
+    console.log(`'${requiredAttributesNotPresent.join(', ')}' missing at path: '${getDocumentsRoot(config)}/${docPath}' for '${tag.trim()}'`);
+    process.exit(1);
   }
 }
 
