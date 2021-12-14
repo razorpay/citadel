@@ -33,14 +33,17 @@ const requiredAttributesByTags = {
 
 function getAttrs(openTag, docPath, config) {
   let attrs = {};
+  let tagName;
+
   const parser = new htmlparser.Parser({
     onopentag(name, _attrs) {
-      validateAttributes(openTag, _attrs, requiredAttributesByTags[name], docPath, config);
       attrs = _attrs;
+      tagName = name;
     },
   });
   parser.write(openTag);
   parser.end();
+  validateAttributes(openTag, attrs, requiredAttributesByTags[tagName], docPath, config);
   return attrs;
 }
 
