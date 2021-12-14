@@ -24,10 +24,18 @@ const blockRules = {
   },
 };
 
-function getAttrs(openTag) {
+const requiredAttributesByTags = {
+  'a': ['href'],
+  'file': ['href'],
+  'show-if': ['org'],
+  'img': ['src']
+};
+
+function getAttrs(openTag, docPath, config) {
   let attrs = {};
   const parser = new htmlparser.Parser({
     onopentag(name, _attrs) {
+      validateAttributes(openTag, _attrs, requiredAttributesByTags[name], docPath, config);
       attrs = _attrs;
     },
   });
@@ -36,23 +44,26 @@ function getAttrs(openTag) {
   return attrs;
 }
 
-function validateRequiredAttributes(tag = '', userGivenAttributes = {}, requiredAttributes = [], docPath, config) {
+function validateAttributes(tag = '', userGivenAttributes = {}, requiredAttributes = [], docPath, config) {
   // running it just for razorpay org
   // else validation will run for same files for other orgs as well
   if (config.org !== 'razorpay') return;
 
-  const requiredAttributesNotPresent = [];
+  const docFullPath = `${getDocumentsRoot(config)}/${docPath}`;
+
   requiredAttributes.forEach(attribute => {
-    if (!userGivenAttributes[attribute]) {
-      filesHaveSyntaxError = true;
-      requiredAttributesNotPresent.push(attribute);
+    if (!userGivenAttributes.hasOwnProperty(attribute)) {
+      console.log(`Required attribute '${attribute}' is missing.\nFile path: '${docFullPath}'\nTag: '${tag.trim()}'`)
+      process.exit(1);
     }
   });
 
-  if (requiredAttributesNotPresent.length) {
-    console.log(`'${requiredAttributesNotPresent.join(', ')}' missing at path: '${getDocumentsRoot(config)}/${docPath}' for '${tag.trim()}'`);
-    process.exit(1);
-  }
+  Object.keys(userGivenAttributes).forEach(attribute => {
+    if (userGivenAttributes[attribute] === 'undefined') {
+      console.log(`Found value 'undefined' for attribute '${attribute}'.\nFile path: '${docFullPath}'\nTag: '${tag.trim()}'`);
+      process.exit(1);
+    }
+  });
 }
 
 module.exports = function (body, config, docPath) {
@@ -67,9 +78,7 @@ module.exports = function (body, config, docPath) {
     .replace(
       /^(\s*)(<show-if[^>]*>)(.*?)<\/show-if>/gms,
       function (_, indent, openTag, content) {
-        attrs = getAttrs(openTag);
-
-        validateRequiredAttributes(openTag, attrs, ['org'], docPath, config);
+        attrs = getAttrs(openTag, docPath, config);
 
         if (config.org === attrs.org) return `${indent}${content}`;
         return '';
@@ -78,18 +87,14 @@ module.exports = function (body, config, docPath) {
     .replace(
       /(\s*)(<file[^>]*>)(.*?)<\/file>/gms,
       function (_, indent, openTag, content) {
-        attrs = getAttrs(openTag);
-
-        validateRequiredAttributes(openTag, attrs, ['href'], docPath, config);
+        attrs = getAttrs(openTag, docPath, config);
 
         const updatedContent = `<a href="${attrs.href}" target="_blank" rel="noreferrer">${content}</a>`;
         return `${indent}${updatedContent}`;
       }
     )
     .replace(/(\s*)<img([^>]*)\/?>/gm, function (openTag, indent) {
-      attrs = getAttrs(openTag);
-
-      validateRequiredAttributes(openTag, attrs, ['src'], docPath, config);
+      attrs = getAttrs(openTag, docPath, config);
 
       if (attrs.src) {
         const isInternalImage = attrs.src.startsWith('/docs/');
@@ -106,9 +111,7 @@ module.exports = function (body, config, docPath) {
     .replace(
       /(\s*)(<a([^>]*?)>)(.*?)<\/a>/gm,
       function (_, indent, openTag, __, content) {
-        attrs = getAttrs(openTag);
-
-        validateRequiredAttributes(openTag, attrs, ['href'], docPath, config);
+        attrs = getAttrs(openTag, docPath, config);
 
         if (attrs.href) {
           attrs.href = customLink(attrs.href, config);
