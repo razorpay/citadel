@@ -83,7 +83,7 @@ function getNav(doc, allDocs, config) {
 }
 
 function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
-  let content = atRules(doc.body, config);
+  let content = atRules(doc.body, config, doc.key);
   const parsedContent = markdown(content, config);
   const parsedContentWithFrontmatter = {
     ...parsedContent,
