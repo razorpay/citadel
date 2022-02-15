@@ -60,11 +60,11 @@ function getNav(doc, allDocs, config) {
 
     /**
      * this means that the path defined in 'tree' is not correct
-     * currently the build doesn't in this case and an empty element is shown in docs site
+     * currently the build doesn't fail in this case due to this an empty element is shown in docs site in left sidebar
      * throwing an error and exiting in this case
     */
     if (!title && !allDocs[key]) {
-      console.log(`buildNavigation: Found file with issue at path: '${key}' \nPlease check 'tree' at path '${doc.index}' if the paths are correctly defined in it.`)
+      console.log(`buildNavigation: File at path: '${key}' not found \nPlease check 'tree' at '${doc.index}' if the paths are correctly defined`)
       process.exit(1);
     }
 
