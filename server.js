@@ -56,7 +56,17 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || allDocs[key]?.frontMatter.title || '';
+    const title = d.title || allDocs[key]?.frontMatter.title;
+
+    /**
+     * this means that the path defined in 'tree' is not correct
+     * currently the build doesn't in this case and an empty element is shown in docs site
+     * throwing an error and exiting in this case
+    */
+    if (!title && !allDocs[key]) {
+      console.log(`buildNavigation: Found file with issue at path: '${key}' \nPlease check 'tree' at path '${doc.index}' if the paths are correctly defined in it.`)
+      process.exit(1);
+    }
 
     const item = {
       key,
