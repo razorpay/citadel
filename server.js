@@ -14,6 +14,8 @@ const getMarkdown = require('./scripts/md');
 
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 
+const filePathsDontExist = [];
+
 function init({ allDocs, config, watch, getKey }) {
   config.plugins.forEach((plugin) => initializePlugin(plugin, config));
 
@@ -64,8 +66,10 @@ function getNav(doc, allDocs, config) {
      * throwing an error and exiting in this case
     */
     if (!title && !allDocs[key]) {
-      console.log(`buildNavigation: File at path: '${key}' not found \nPlease check 'tree' at '${doc.index}' if the paths are correctly defined`)
-      process.exit(1);
+      const err = `buildNavigation: File at path: '${key}' not found \nPlease check 'tree' at '${doc.index}' if the paths are correctly defined`;
+      if (!filePathsDontExist.includes(err)) {
+        filePathsDontExist.push(err);
+      }
     }
 
     const item = {
@@ -138,7 +142,12 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
         }
       })
     );
-    res.end(compileDoc({ doc, config, pugCompiler, allDocs, markdown }));
+    const html = compileDoc({ doc, config, pugCompiler, allDocs, markdown });
+    if (filePathsDontExist.length) {
+      console.log(filePathsDontExist);
+      process.exit(1);
+    }
+    res.end(html);
     config.plugins.forEach(cleanupPlugin);
   };
 
@@ -174,6 +183,10 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
+  if (filePathsDontExist.length) {
+    console.log(filePathsDontExist);
+    process.exit(1);
+  }
   createRedirects(config);
   config.plugins.forEach(cleanupPlugin);
 }
