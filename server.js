@@ -144,7 +144,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     );
     const html = compileDoc({ doc, config, pugCompiler, allDocs, markdown });
     if (filePathsDontExist.length) {
-      console.log(filePathsDontExist);
+      console.error(filePathsDontExist);
       process.exit(1);
     }
     res.end(html);
@@ -184,7 +184,7 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     cfs.write(filepath, html);
   });
   if (filePathsDontExist.length) {
-    console.log(filePathsDontExist);
+    console.error(filePathsDontExist);
     process.exit(1);
   }
   createRedirects(config);
