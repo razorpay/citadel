@@ -39,9 +39,12 @@ function formatTree({ tree, key, getPath, filePathsDontExist }) {
     .split('\n')
     .filter((_) => _)
     .map((line) => {
+      // 'folder-name | title' format is split here
       const split = line.split('|');
       const level = split[0].match(/^\s+/)?.[0].length / 2 || 0;
       const title = split.length > 1 && split.slice(1).join('|').trim();
+      // 'folder-name' from the above split is stored in navKey
+      // which will be used as a link to the page while generating navigation
       const navKey = split[0].trim();
       
       /** We are checking if paths given in the tree file exists or not
