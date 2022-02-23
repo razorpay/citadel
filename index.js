@@ -28,12 +28,13 @@ readConfig().then((configs) => {
 });
 
 async function compile(config) {
+  const filePathsDontExist = [];
   const documentsRoot = getDocumentsRoot(config);
   const getKey = (path) =>
     path.slice(documentsRoot.length + 1, -markdownExtension.length);
   const getPath = (key) => documentsRoot + '/' + key + markdownExtension;
   const allDocs = {};
-  const getDoc = await getFormattedDoc({ allDocs, getPath });
+  const getDoc = await getFormattedDoc({ allDocs, getPath, config, filePathsDontExist });
 
   if (shouldCreateRedirects) {
     createRedirects(config);
@@ -46,6 +47,7 @@ async function compile(config) {
       getPath,
       getKey,
       allDocs,
+      filePathsDontExist,
     });
   } else {
     build({
@@ -54,6 +56,7 @@ async function compile(config) {
       docs: glob(getDocumentsGlob(config, markdownExtension)),
       getKey,
       allDocs,
+      filePathsDontExist,
     });
   }
 }

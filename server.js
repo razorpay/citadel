@@ -14,8 +14,6 @@ const getMarkdown = require('./scripts/md');
 
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
 
-const filePathsDontExist = [];
-
 function init({ allDocs, config, watch, getKey }) {
   config.plugins.forEach((plugin) => initializePlugin(plugin, config));
 
@@ -60,17 +58,6 @@ function getNav(doc, allDocs, config) {
     }
     const title = d.title || allDocs[key]?.frontMatter.title;
 
-    /**
-     * this means that the path defined in 'tree' is not correct
-     * currently the build doesn't fail in this case due to this an empty element is shown in docs site in left sidebar
-     * pushing all the errors to an array and throwing it all at once in build and exiting
-    */
-    if (!title && !allDocs[key]) {
-      const err = `buildNavigation: File at path: '${key}' not found \nPlease check 'tree' at '${doc.index}' if the paths are correctly defined`;
-      if (!filePathsDontExist.includes(err)) {
-        filePathsDontExist.push(err);
-      }
-    }
 
     const item = {
       key,
@@ -116,7 +103,7 @@ function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   });
 }
 
-const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
+const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist }) => {
   const markdown = getMarkdown(config);
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
@@ -129,6 +116,14 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     }
     if (!result) return next();
     const doc = await getDoc(key);
+
+    if (filePathsDontExist.length) {
+      filePathsDontExist.forEach(obj => {
+        console.error(`File not found at path \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path \n${obj.treeFilePath}`)
+      });
+      process.exit(1);
+    }
+
     await Promise.all(
       allDocs[doc.index].tree.map(async (d) => {
         let navKey = d.key;
@@ -142,12 +137,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
         }
       })
     );
-    const html = compileDoc({ doc, config, pugCompiler, allDocs, markdown });
-    if (filePathsDontExist.length) {
-      console.error(filePathsDontExist);
-      process.exit(1);
-    }
-    res.end(html);
+    res.end(compileDoc({ doc, config, pugCompiler, allDocs, markdown }));
     config.plugins.forEach(cleanupPlugin);
   };
 
@@ -164,7 +154,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     });
 };
 
-async function build({ config, getDoc, docs, getKey, allDocs }) {
+async function build({ config, getDoc, docs, getKey, allDocs, filePathsDontExist }) {
   const markdown = getMarkdown(config);
   docs = await Promise.all(
     docs
@@ -174,6 +164,14 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
       })
       .filter((_) => _)
   );
+  
+  if (filePathsDontExist.length) {
+    filePathsDontExist.forEach(obj => {
+      console.error(`File not found at path: \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path: \n${obj.treeFilePath} \n`)
+    });
+    process.exit(1);
+  }
+
   const { pugCompiler } = init({ config });
   execSync(
     `cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`
@@ -183,10 +181,6 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
     const filepath = config.dist + '/' + doc.href + '/index.html';
     cfs.write(filepath, html);
   });
-  if (filePathsDontExist.length) {
-    console.error(filePathsDontExist);
-    process.exit(1);
-  }
   createRedirects(config);
   config.plugins.forEach(cleanupPlugin);
 }
