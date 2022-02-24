@@ -56,7 +56,8 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || allDocs[key]?.frontMatter.title || '';
+    const title = d.title || allDocs[key]?.frontMatter.title;
+
 
     const item = {
       key,
@@ -102,7 +103,7 @@ function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   });
 }
 
-const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
+const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist }) => {
   const markdown = getMarkdown(config);
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
@@ -115,6 +116,14 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     }
     if (!result) return next();
     const doc = await getDoc(key);
+
+    if (filePathsDontExist.length) {
+      filePathsDontExist.forEach(obj => {
+        console.error(`File not found at path \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path \n${obj.treeFilePath}`)
+      });
+      process.exit(1);
+    }
+
     await Promise.all(
       allDocs[doc.index].tree.map(async (d) => {
         let navKey = d.key;
@@ -145,7 +154,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey }) => {
     });
 };
 
-async function build({ config, getDoc, docs, getKey, allDocs }) {
+async function build({ config, getDoc, docs, getKey, allDocs, filePathsDontExist }) {
   const markdown = getMarkdown(config);
   docs = await Promise.all(
     docs
@@ -155,6 +164,14 @@ async function build({ config, getDoc, docs, getKey, allDocs }) {
       })
       .filter((_) => _)
   );
+  
+  if (filePathsDontExist.length) {
+    filePathsDontExist.forEach(obj => {
+      console.error(`File not found at path: \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path: \n${obj.treeFilePath} \n`)
+    });
+    process.exit(1);
+  }
+
   const { pugCompiler } = init({ config });
   execSync(
     `cp -r ${config.src}/* ${config.dist}/; find ${config.dist} -name  "*.md" -type f -delete`

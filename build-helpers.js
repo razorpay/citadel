@@ -4,7 +4,7 @@ const {
 } = require('./fs-helpers');
 const frontMatter = require('front-matter');
 
-async function getFormattedDoc({ allDocs, getPath }) {
+async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
   return async function getDoc(key) {
     if (allDocs.hasOwnProperty(key)) return allDocs[key];
 
@@ -22,7 +22,7 @@ async function getFormattedDoc({ allDocs, getPath }) {
       frontMatter: attributes,
       body,
       href,
-      tree: formatTree({ tree: attributes.tree || '', key }),
+      tree: formatTree({ tree: attributes.tree || '', key, getPath, filePathsDontExist }),
     };
     allDocs[key] = doc;
     doc.index = await getIndex({ doc, getPath, getDoc });
@@ -34,15 +34,34 @@ async function getFormattedDoc({ allDocs, getPath }) {
   };
 }
 
-function formatTree({ tree, key }) {
+function formatTree({ tree, key, getPath, filePathsDontExist }) {
   return tree
     .split('\n')
     .filter((_) => _)
     .map((line) => {
+      // 'folder-name | title' format is split here
       const split = line.split('|');
       const level = split[0].match(/^\s+/)?.[0].length / 2 || 0;
       const title = split.length > 1 && split.slice(1).join('|').trim();
+      // 'folder-name' from the above split is stored in navKey
+      // which will be used as a link to the page while generating navigation
       const navKey = split[0].trim();
+      
+      /** We are checking if paths given in the tree file exists or not
+       *  we are pushing all the file paths that don't exist in an array
+       *  and the build would fail at the end listing all these file paths
+       */
+      if (navKey && navKey !== 'index') {
+        const filePath = key.replace(/(^|\/)index$/, '') + '/' + navKey;
+        const content = cfs.readSync(getPath(filePath));
+
+        if (!content && !filePathsDontExist.find(obj => obj.filePath === filePath)) {
+          filePathsDontExist.push({
+            filePath,
+            treeFilePath: key
+          });
+        }
+      }
 
       return {
         key: navKey && dir(key) + '/' + navKey,
