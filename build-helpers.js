@@ -26,6 +26,9 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
     };
     allDocs[key] = doc;
     doc.index = await getIndex({ doc, getPath, getDoc });
+    if (allDocs[doc.index].tree.length === 0) {
+      doc.index = '/index';
+    }
     if (doc.index !== key) {
       const indexDoc = allDocs[doc.index];
       doc.frontMatter = { ...indexDoc.frontMatter, ...attributes };
@@ -46,7 +49,7 @@ function formatTree({ tree, key, getPath, filePathsDontExist }) {
       // 'folder-name' from the above split is stored in navKey
       // which will be used as a link to the page while generating navigation
       const navKey = split[0].trim();
-      
+
       /** We are checking if paths given in the tree file exists or not
        *  we are pushing all the file paths that don't exist in an array
        *  and the build would fail at the end listing all these file paths
@@ -55,10 +58,13 @@ function formatTree({ tree, key, getPath, filePathsDontExist }) {
         const filePath = key.replace(/(^|\/)index$/, '') + '/' + navKey;
         const content = cfs.readSync(getPath(filePath));
 
-        if (!content && !filePathsDontExist.find(obj => obj.filePath === filePath)) {
+        if (
+          !content &&
+          !filePathsDontExist.find((obj) => obj.filePath === filePath)
+        ) {
           filePathsDontExist.push({
             filePath,
-            treeFilePath: key
+            treeFilePath: key,
           });
         }
       }
