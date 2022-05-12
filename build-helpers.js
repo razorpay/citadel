@@ -72,7 +72,7 @@ function formatTree({ tree, key, getPath, filePathsDontExist }) {
       }
 
       return {
-        key: navKey && dir(key) + '/' + navKey,
+        key: navKey && dir(key) + (dir(key) && '/') + navKey,
         title,
         level,
       };
