@@ -26,8 +26,10 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
     };
     allDocs[key] = doc;
     doc.index = await getIndex({ doc, getPath, getDoc });
+    // if current doc's index doesn't have tree, we set it to '/index'
     if (allDocs[doc.index].tree.length === 0) {
-      doc.index = '/index';
+      await getDoc('/index');
+      doc.index= '/index';
     }
     if (doc.index !== key) {
       const indexDoc = allDocs[doc.index];

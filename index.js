@@ -32,7 +32,7 @@ async function compile(config) {
   const documentsRoot = getDocumentsRoot(config);
   const getKey = (path) =>
     path.slice(documentsRoot.length + 1, -markdownExtension.length);
-  const getPath = (key) => documentsRoot + '/' + key + markdownExtension;
+  const getPath = (key) => documentsRoot + (key.startsWith('/')?'':'/') + key + markdownExtension;
   const allDocs = {};
   const getDoc = await getFormattedDoc({ allDocs, getPath, config, filePathsDontExist });
 
