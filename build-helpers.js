@@ -26,7 +26,7 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
     };
     allDocs[key] = doc;
     doc.index = await getIndex({ doc, getPath, getDoc });
-    // if current doc's index doesn't have tree, we set it to '/index'
+    // if current doc's index doesn't have tree, we set it to '{root directory}/index'
     if (allDocs[doc.index].tree.length === 0) {
       await getDoc('/index');
       doc.index= '/index';
@@ -72,6 +72,11 @@ function formatTree({ tree, key, getPath, filePathsDontExist }) {
       }
 
       return {
+        /* 
+           as the mapped (in allDocs) key is used as a link to the page, which don't starts with '/'
+           we need to remove '/' from the beginning of the key
+           hence only adding '/' if dir(key) is not empty
+        */
         key: navKey && dir(key) + (dir(key) && '/') + navKey,
         title,
         level,
