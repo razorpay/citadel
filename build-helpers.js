@@ -13,14 +13,15 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
       return;
     }
     const { attributes, body } = frontMatter(contents);
+    const normalizedAttributes = normalizeFrontmatter(attributes);
     const href = key.replace(/(^|\/)index$/, '');
     const doc = {
       key,
-      frontMatter: normalizeFrontmatter(attributes),
+      frontMatter: normalizedAttributes,
       body,
       href,
       tree: formatTree({
-        tree: attributes.tree || '',
+        tree: normalizedAttributes.tree || '',
         key,
         getPath,
         filePathsDontExist,
@@ -35,7 +36,7 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
     }
     if (doc.index !== key) {
       const indexDoc = allDocs[doc.index];
-      doc.frontMatter = { ...indexDoc.frontMatter, ...attributes };
+      doc.frontMatter = { ...indexDoc.frontMatter, ...normalizedAttributes };
     }
     return doc;
   };
