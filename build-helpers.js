@@ -1,7 +1,4 @@
-const {
-  cfs,
-  dir,
-} = require('./fs-helpers');
+const { cfs, dir } = require('./fs-helpers');
 const frontMatter = require('front-matter');
 
 async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
@@ -16,24 +13,30 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
       return;
     }
     const { attributes, body } = frontMatter(contents);
+    const normalizedAttributes = normalizeFrontmatter(attributes);
     const href = key.replace(/(^|\/)index$/, '');
     const doc = {
       key,
-      frontMatter: attributes,
+      frontMatter: normalizedAttributes,
       body,
       href,
-      tree: formatTree({ tree: attributes.tree || '', key, getPath, filePathsDontExist }),
+      tree: formatTree({
+        tree: normalizedAttributes.tree || '',
+        key,
+        getPath,
+        filePathsDontExist,
+      }),
     };
     allDocs[key] = doc;
     doc.index = await getIndex({ doc, getPath, getDoc });
     // if current doc's index doesn't have tree, we set it to '{root directory}/index'
     if (allDocs[doc.index].tree.length === 0) {
       await getDoc('/index');
-      doc.index= '/index';
+      doc.index = '/index';
     }
     if (doc.index !== key) {
       const indexDoc = allDocs[doc.index];
-      doc.frontMatter = { ...indexDoc.frontMatter, ...attributes };
+      doc.frontMatter = { ...indexDoc.frontMatter, ...normalizedAttributes };
     }
     return doc;
   };
@@ -103,6 +106,10 @@ async function getIndex({ doc, getPath, getDoc }) {
     }
   }
   return doc.key;
+}
+
+function normalizeFrontmatter(frontMatter = {}) {
+  return { ...frontMatter, heading: frontMatter.heading || frontMatter.title };
 }
 
 module.exports = {
