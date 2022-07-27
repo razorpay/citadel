@@ -56,8 +56,10 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || allDocs[key]?.frontMatter.title;
-
+    const title =
+      d.title ||
+      allDocs[key]?.frontMatter.heading ||
+      allDocs[key]?.frontMatter.title;
 
     const item = {
       key,
@@ -103,7 +105,14 @@ function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   });
 }
 
-const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist }) => {
+const serve = ({
+  config,
+  getDoc,
+  getPath,
+  allDocs,
+  getKey,
+  filePathsDontExist,
+}) => {
   const markdown = getMarkdown(config);
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
@@ -118,8 +127,10 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist })
     const doc = await getDoc(key);
 
     if (filePathsDontExist.length) {
-      filePathsDontExist.forEach(obj => {
-        console.error(`File not found at path \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path \n${obj.treeFilePath}`)
+      filePathsDontExist.forEach((obj) => {
+        console.error(
+          `File not found at path \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path \n${obj.treeFilePath}`
+        );
       });
       process.exit(1);
     }
@@ -154,7 +165,14 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist })
     });
 };
 
-async function build({ config, getDoc, docs, getKey, allDocs, filePathsDontExist }) {
+async function build({
+  config,
+  getDoc,
+  docs,
+  getKey,
+  allDocs,
+  filePathsDontExist,
+}) {
   const markdown = getMarkdown(config);
   docs = await Promise.all(
     docs
@@ -164,10 +182,12 @@ async function build({ config, getDoc, docs, getKey, allDocs, filePathsDontExist
       })
       .filter((_) => _)
   );
-  
+
   if (filePathsDontExist.length) {
-    filePathsDontExist.forEach(obj => {
-      console.error(`File not found at path: \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path: \n${obj.treeFilePath} \n`)
+    filePathsDontExist.forEach((obj) => {
+      console.error(
+        `File not found at path: \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path: \n${obj.treeFilePath} \n`
+      );
     });
     process.exit(1);
   }
