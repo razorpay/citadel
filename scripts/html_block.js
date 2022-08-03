@@ -82,7 +82,7 @@ module.exports = function (md, config) {
         max = state.eMarks[nextLine];
         lineText = state.src.slice(pos, max);
 
-        if (lineText.startsWith('</' + tagMatch[1])) {
+        if (lineText.trim().startsWith('</' + tagMatch[1])) {
           break;
         }
 
