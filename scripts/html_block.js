@@ -128,7 +128,7 @@ const customHtml = {
 }
 
 
-const raw_tags = ['script', 'style', 'pre', 'p', 'fence'];
+const raw_tags = ['script', 'style', 'pre', 'p', 'fence', 'iframe'];
 
 function doprocess(tag, lines, md, config) {
   if (tag in customHtml) {
