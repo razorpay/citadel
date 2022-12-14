@@ -15,7 +15,7 @@
   "homepage": "https://github.com/razorpay/citadel#readme",
   "dependencies": {
     "chokidar": "3.5.2",
-    "express": "4.17.1",
+    "express": "4.17.3",
     "front-matter": "4.0.2",
     "glob": "7.1.7",
     "highlight.js": "10.6.0",
