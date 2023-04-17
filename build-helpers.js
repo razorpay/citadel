@@ -34,10 +34,6 @@ async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
       await getDoc('/index');
       doc.index = '/index';
     }
-    if (doc.index !== key) {
-      const indexDoc = allDocs[doc.index];
-      doc.frontMatter = { ...indexDoc.frontMatter, ...normalizedAttributes };
-    }
     return doc;
   };
 }
