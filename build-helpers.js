@@ -1,7 +1,7 @@
 const { cfs, dir } = require('./fs-helpers');
 const frontMatter = require('front-matter');
 
-async function getFormattedDoc({ allDocs, getPath, filePathsDontExist }) {
+async function getFormattedDoc({ allDocs, getPath, filePathsDontExist = [] }) {
   return async function getDoc(key) {
     if (allDocs.hasOwnProperty(key)) return allDocs[key];
 
