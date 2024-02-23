@@ -27,7 +27,6 @@ const blockRules = {
 const requiredAttributesByTags = {
   'a': ['href'],
   'file': ['href'],
-  'show-if': ['org'],
   'img': ['src']
 };
 
