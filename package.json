@@ -26,6 +26,7 @@
     "markdown-it": "12.0.6",
     "markdown-it-anchor": "7.1.0",
     "markdown-it-deflist": "2.1.0",
+    "sanitize-html": "2.7.0",
     "pug": "3.0.2",
     "sirv": "1.0.12",
     "stylus": "0.54.8",
