@@ -52,12 +52,14 @@ const build = async (config) => {
 
   docsWithContent.forEach((doc) => {
     let content = atRules(doc.body, config, doc.key);
-    const parsedContent = markdown(content, config);
+    const trimmedContent = content.split('\n').filter(line => Boolean(line.trim())).map(line => line.trim()).join('\n')
+    const parsedContent = markdown(trimmedContent, config);
     const parsedContentWithFrontmatter = {
       ...parsedContent,
       ...doc.frontMatter,
       body: content,
       href: doc.href,
+      content: parsedContent.content.split('\n').join(''),
     };
     applyPlugin({ plugin, content: parsedContentWithFrontmatter });
   });
