@@ -64,7 +64,7 @@ const build = async (config) => {
       href: doc.href,
       content: parsedContent.content.split('\n').join(''),
     };
-    applyPlugin({ plugin, content: parsedContentWithFrontmatter });
+    applyPlugin({ plugin, content: parsedContentWithFrontmatter, config });
   });
 }
 
