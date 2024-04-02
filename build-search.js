@@ -55,7 +55,7 @@ const build = async (config) => {
     // trim the content to remove extra empty lines and spaces
     // if content is not trimmed, then this results in incorrect interpretation of indentation resulting
     // resulting in errors like adding codeblocks whenver indentation > 3 etc.
-    const trimmedContent = content.split('\n').filter(line => Boolean(line.trim())).map(line => line.trim()).join('\n')
+    const trimmedContent = content.split('\n').map(line => line.trim()).join('\n')
     const parsedContent = markdown(trimmedContent, config);
     const parsedContentWithFrontmatter = {
       ...parsedContent,
