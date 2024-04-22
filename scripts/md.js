@@ -184,6 +184,7 @@ module.exports = (config) => {
 
     /**
      * sanitizeHtml function is used here to clean up the html generated with unclosed / wrongly closed tags
+     * // Ref : https://github.com/apostrophecms/sanitize-html#readme
      */
     content = sanitizeHtml(content, {
       allowedTags: false, // Do not filter out any tag from the html content
