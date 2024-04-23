@@ -52,14 +52,19 @@ const build = async (config) => {
 
   docsWithContent.forEach((doc) => {
     let content = atRules(doc.body, config, doc.key);
-    const parsedContent = markdown(content, config);
+    // trim the content to remove extra empty lines and spaces
+    // if content is not trimmed, then this results in incorrect interpretation of indentation resulting
+    // resulting in errors like adding codeblocks whenver indentation > 3 etc.
+    const trimmedContent = content.split('\n').map(line => line.trim()).join('\n')
+    const parsedContent = markdown(trimmedContent, config);
     const parsedContentWithFrontmatter = {
       ...parsedContent,
       ...doc.frontMatter,
       body: content,
       href: doc.href,
+      content: parsedContent.content.split('\n').join(''), //this is done to remove the extra spacing and trim down the html dom string
     };
-    applyPlugin({ plugin, content: parsedContentWithFrontmatter });
+    applyPlugin({ plugin, content: parsedContentWithFrontmatter, config });
   });
 }
 

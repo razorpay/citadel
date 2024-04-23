@@ -82,7 +82,7 @@ module.exports = function (body, config, docPath) {
       function (_, indent, openTag, content) {
         attrs = getAttrs(openTag, docPath, config);
 
-        if (config.org === attrs.org) return `${indent}${content}`;
+        if (config.org === attrs.org && config.countryCode === attrs.country ) return `${indent}${content}`;
         return '';
       }
     )

@@ -95,8 +95,8 @@ function initializePlugin(plugin, config) {
   plugin.init(config);
 }
 
-function applyPlugin({ plugin, content }) {
-  const result = plugin.process(content);
+function applyPlugin({ plugin, content, config }) {
+  const result = plugin.process(content, config);
   if (!result) {
     const error = new Error(
       'Error processing content: ' +
