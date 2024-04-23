@@ -62,7 +62,7 @@ const build = async (config) => {
       ...doc.frontMatter,
       body: content,
       href: doc.href,
-      content: parsedContent.content.split('\n').join(''),
+      content: parsedContent.content.split('\n').join(''), //this is done to remove the extra spacing and trim down the html dom string
     };
     applyPlugin({ plugin, content: parsedContentWithFrontmatter, config });
   });
