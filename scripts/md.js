@@ -145,7 +145,7 @@ function getMd(config) {
       return str;
     },
   })
-    .disable(['table', 'lheading', 'hr', 'html_block'])
+    .disable(['table', 'lheading', 'hr', 'html_block', 'list'])
     .use(deflist)
     .use(anchor, {
       permalink: true,
