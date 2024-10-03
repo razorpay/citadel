@@ -13,7 +13,6 @@ const atRules = require('./scripts/at-rules');
 const getMarkdown = require('./scripts/md');
 
 const { initializePlugin, applyPlugin, cleanupPlugin } = require('./plugins');
-
 function init({ allDocs, config, watch, getKey }) {
   config.plugins.forEach((plugin) => initializePlugin(plugin, config));
 
@@ -46,7 +45,7 @@ function init({ allDocs, config, watch, getKey }) {
   };
 }
 
-function getNav(doc, allDocs, config) {
+function getNav(doc, allDocs, config, level1 = null) {
   const indexDoc = allDocs[doc.index];
   const nav = [];
   const last = {};
@@ -56,12 +55,9 @@ function getNav(doc, allDocs, config) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title =
-      d.title ||
-      allDocs[key]?.frontMatter.heading ||
-      allDocs[key]?.frontMatter.title;
+    const title = d.title || allDocs[key]?.frontMatter.title;
 
-    const item = {
+    let item = {
       key,
       title,
       href: key && allDocs[key]?.href,
@@ -69,6 +65,19 @@ function getNav(doc, allDocs, config) {
       children: [],
       active: key === doc.key,
     };
+
+    if(process.env.NODE_ENV && process.env.NODE_ENV === 'development' && level1){
+      var commonPrefix = '';
+      for (var i = 0; i < doc.key.length; i++) {
+        if (doc.key[i] === key[i]) {
+          commonPrefix += doc.key[i];
+        } else {
+          break;
+        }
+      }
+      var url = level1+'/' + key.substring(commonPrefix.length)
+      item = {...item , href: url.replace('/index', '').trim()}
+    }
 
     last[level] = item;
     if (level) {
@@ -85,7 +94,7 @@ function getNav(doc, allDocs, config) {
   return nav;
 }
 
-function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
+function compileDoc({ doc, config, pugCompiler, allDocs, markdown, level1 = null }) {
   let content = atRules(doc.body, config, doc.key);
   const parsedContent = markdown(content, config);
   const parsedContentWithFrontmatter = {
@@ -100,20 +109,14 @@ function compileDoc({ doc, config, pugCompiler, allDocs, markdown }) {
   return pugCompiler({
     ...doc,
     ...result,
-    nav: getNav(doc, allDocs, config),
+    nav: getNav(doc, allDocs, config, level1),
     config,
   });
 }
 
-const serve = ({
-  config,
-  getDoc,
-  getPath,
-  allDocs,
-  getKey,
-  filePathsDontExist,
-}) => {
-  const markdown = getMarkdown(config);
+const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist }) => {
+  console.log('serve execute')
+  const markdown = getMarkdown(config); 
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
     let key = req.path.slice(1).replace(/\/$/, '');
@@ -125,30 +128,32 @@ const serve = ({
     }
     if (!result) return next();
     const doc = await getDoc(key);
-
     if (filePathsDontExist.length) {
-      filePathsDontExist.forEach((obj) => {
-        console.error(
-          `File not found at path \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path \n${obj.treeFilePath}`
-        );
+      filePathsDontExist.forEach(obj => {
+        console.error(`File not found at path \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path \n${obj.treeFilePath}`)
       });
       process.exit(1);
     }
-
+    let level1 = null;
     await Promise.all(
       allDocs[doc.index].tree.map(async (d) => {
         let navKey = d.key;
         let result = await cfs.read(getPath(navKey));
         if (!result) {
           navKey += '/index';
-          result = await cfs.read(getPath(navKey));
+          if(process.env.NODE_ENV && process.env.NODE_ENV === 'development'){
+            result = await cfs.read(getPath(doc.key));
+            level1 = doc.key;
+          }else{
+            result = await cfs.read(getPath(navKey));
+          }
         }
         if (result) {
           await getDoc(navKey);
         }
       })
     );
-    res.end(compileDoc({ doc, config, pugCompiler, allDocs, markdown }));
+    res.end(compileDoc({ doc, config, pugCompiler, allDocs, markdown, level1 }));
     config.plugins.forEach(cleanupPlugin);
   };
 
@@ -165,14 +170,7 @@ const serve = ({
     });
 };
 
-async function build({
-  config,
-  getDoc,
-  docs,
-  getKey,
-  allDocs,
-  filePathsDontExist,
-}) {
+async function build({ config, getDoc, docs, getKey, allDocs, filePathsDontExist }) {
   const markdown = getMarkdown(config);
   docs = await Promise.all(
     docs
@@ -182,12 +180,10 @@ async function build({
       })
       .filter((_) => _)
   );
-
+  
   if (filePathsDontExist.length) {
-    filePathsDontExist.forEach((obj) => {
-      console.error(
-        `File not found at path: \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path: \n${obj.treeFilePath} \n`
-      );
+    filePathsDontExist.forEach(obj => {
+      console.error(`File not found at path: \n${obj.filePath} \nPlease check if paths defined in 'tree' are correct at path: \n${obj.treeFilePath} \n`)
     });
     process.exit(1);
   }
