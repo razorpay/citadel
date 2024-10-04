@@ -55,7 +55,10 @@ function getNav(doc, allDocs, config, level1 = null) {
       if (!checkAllowed(key, config)) return;
       if (!allDocs[key] && allDocs[key + '/index']) key = key + '/index';
     }
-    const title = d.title || allDocs[key]?.frontMatter.title;
+    const title =
+    d.title ||
+    allDocs[key]?.frontMatter.heading ||
+    allDocs[key]?.frontMatter.title;
 
     let item = {
       key,
