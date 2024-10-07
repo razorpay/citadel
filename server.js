@@ -69,7 +69,7 @@ function getNav(doc, allDocs, config, level1 = null) {
       active: key === doc.key,
     };
 
-    if(process.env.NODE_ENV && process.env.NODE_ENV === 'development' && level1){
+    if(process.env.NODE_ENV && process.env.NODE_ENV === 'idocs-development' && level1){
       var commonPrefix = '';
       for (var i = 0; i < doc.key.length; i++) {
         if (doc.key[i] === key[i]) {
@@ -144,7 +144,7 @@ const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist })
         let result = await cfs.read(getPath(navKey));
         if (!result) {
           navKey += '/index';
-          if(process.env.NODE_ENV && process.env.NODE_ENV === 'development'){
+          if(process.env.NODE_ENV && process.env.NODE_ENV === 'idocs-development'){
             result = await cfs.read(getPath(doc.key));
             level1 = doc.key;
           }else{
