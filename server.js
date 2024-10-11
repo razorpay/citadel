@@ -117,8 +117,14 @@ function compileDoc({ doc, config, pugCompiler, allDocs, markdown, level1 = null
   });
 }
 
-const serve = ({ config, getDoc, getPath, allDocs, getKey, filePathsDontExist }) => {
-  console.log('serve execute')
+const serve = ({
+  config,
+  getDoc,
+  getPath,
+  allDocs,
+  getKey,
+  filePathsDontExist,
+}) => {
   const markdown = getMarkdown(config); 
   const { pugCompiler } = init({ allDocs, config, watch: true, getKey });
   const serveDoc = async (req, res, next) => {
