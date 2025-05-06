@@ -31,7 +31,7 @@
     "sirv": "1.0.12",
     "stylus": "0.54.8",
     "webpack": "5.38.1",
-    "yargs-parser": "20.2.7"
+    "yargs-parser": "21.1.1"
   },
   "scripts": {
     "start": "node index serve",
